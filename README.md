@@ -1,6 +1,6 @@
 ---
 title: Front Matter Test
-layout: post
+layout: page
 ---
 This is a test to see if Jekyll acts on this.
 
