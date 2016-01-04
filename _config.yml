@@ -1,7 +1,7 @@
 # Site settings
 title: io.zwets.it
 email: io@zwets.it
-description: "Marco van Zwetselaar's IT self"
+description: "Marco van Zwetselaar's IT domain"
 #baseurl: ""
 url: "http://io.zwets.it"
 github_username:  zwets
@@ -16,17 +16,19 @@ TZ: Africa/Dar_es_Salaam
 # Conversion
 #markdown:    kramdown
 #highlighter: rouge
+highlighter: pygments
 #lsi:         false
 #excerpt_separator: "\n\n"
 #incremental: false
 
-
 # Build settings
 markdown: kramdown
-#  input: GFM   # Github Flavoured Markdown
 permalink: pretty
 timezone: Africa/Dar_es_Salaam
 #jekyll.environment: production # default is development?
+
+kramdown:
+  input: GFM   # Github Flavoured Markdown
 
 # (Non-overrideable) Github defaults
 #safe: true
@@ -39,19 +41,19 @@ timezone: Africa/Dar_es_Salaam
 # site.github.{url,owner_url,build_revision,api_url,owner_gravatar_url, ...}
 
 # Page defaults (see http://jekyllrb.com/docs/configuration/)
-defaults:
-  -
-    scope:
-      path: ""  # any path
-      type: posts # but only of type posts (other options are: pages, drafts)
-    values:
-      layout: post
-      author: "zwets"
-  -
-    scope:
-      path: "" # any path
-      type: pages
-    values:
-      layout: page
-      author: "zwets"
+#defaults:
+#  -
+#    scope:
+#      path: ""  # any path
+#      type: posts # but only of type posts (other options are: pages, drafts)
+#    values:
+#      layout: post
+#      author: "zwets"
+#  -
+#    scope:
+#      path: "" # any path
+#      type: pages
+#    values:
+#      layout: page
+#      author: "zwets"
 

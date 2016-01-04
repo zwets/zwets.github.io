@@ -1,6 +1,5 @@
 ---
-title: Front Matter Test
-layout: page
 ---
-This is a test to see if Jekyll acts on this.
+
+# Repository for [io.zwets.it](http://io.zwets.it/) / zwets.github.io.
 
