@@ -1,6 +1,8 @@
 ---
 title: Jekyll Notes
 layout: page
+category: notes
+tags: jekyll, github, markdown
 ignore: { permalink, category, categories, tags, published }
 ---
 
@@ -18,6 +20,14 @@ ignore: { permalink, category, categories, tags, published }
  - [Writing on Github](https://help.github.com/articles/writing-on-github/)
  - [GitHub Flavoured Markdown](https://help.github.com/articles/github-flavored-markdown/)
 
+### Themes for Jekyll
+
+ - [Jekyll Now](https://github.com/barryclark/jekyll-now) from 
+   [Building a blog with Jekyll and GitHub pages](http://www.smashingmagazine.com/2014/08/build-blog-jekyll-github-pages/)
+ - [Poole](http://getpoole.com/)
+ - [Lanyon](http://lanyon.getpoole.com/)
+ - [Skinny Bones](https://mmistakes.github.io/skinny-bones-jekyll/)
+
 ## Quickstart (local)
 
 From the Jekyll site
@@ -30,10 +40,9 @@ bundle update # regularly
 bundle exec jekyll serve
 {% endhighlight %}
 
-```bash
+{% highlight bash %}
 # Seems to be broken
 bundle install gem jekyll-docs
 bundle exec jekyll docs
-```
-
+{% endhighlight %}
 

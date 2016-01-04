@@ -7,7 +7,7 @@ permalink: /about/
 
 ## Introducing io.zwets.it
 
-Io is Zwets is Marco van Zwetselaar.  For [many](http://web.archive.org/web/*/http://zwets.com/) years\* my digital namespace has been [zwets.com](http://zwets.com/). I am still there but have forked the coder part of my identity to here.
+Io is Zwets is Marco van Zwetselaar.  For [many](http://web.archive.org/web/*/http://zwets.com/) years\* my digital namespace has been [zwets.com](http://zwets.com/).  I am still there but have forked the coder part of my identity to here.  This is not so much about the blogging, rather that I need a place for "tech stuff that should go on the internet".
 
 ### So who is zwets@zwets.com?
 
@@ -19,7 +19,7 @@ My professional career started in academic research somewhere in the past millen
 
 #### Io is a programmer
 
-I have worked in a variety of fields, but with one prominent constant throughout: **programming**.  I've loved it from my first lines of BASIC, Pascal and LISP in the 80s, through Mlocs of C, C++ and Java in the 90/00s, to my current-day mix of Python, R, and glorious Haskell.  Along the way, there were pleasant times in Prolog, Smalltalk and Erlang, and recreational excursions to the likes of Pure, Coq and Parallel Brainfuck.  And not a day passes without the simple joy of GNU and Bash.
+I have worked in a variety of fields, but with one prominent constant throughout: **programming**.  I've loved it from my first lines of BASIC, Pascal and LISP in the 80s, through Mlocs of C, C++ and Java in the 90/00s, to my current-day mix of Python, R, and glorious Haskell.  Along the way, there were pleasant times in Prolog, Smalltalk and Erlang, and recreational excursions to the likes of Pure, Coq and Parallel Brainfuck.  Not a day passes without the simple joy of GNU and Bash.
 
 I *love* programming.
 
