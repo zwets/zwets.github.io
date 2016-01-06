@@ -2,7 +2,6 @@
 title: About
 permalink: /about/
 layout: page
-topnav: true
 ---
 
 ## Introducing io.zwets.it
@@ -11,7 +10,7 @@ Io is Zwets is Marco van Zwetselaar.  For [many](http://web.archive.org/web/*/ht
 
 ### So who is zwets@zwets.com?
 
-My wife and I use [http://zwets.com/](http://zwets.com/) to blog about our life and work in Moshi, Tanzania.  She is a neurologist at [KCMC Hospital](http://www.kcmc.ac.tz/).  I work as a software programmer and bioinformatician at the associated [Kilimanjaro Clinical Research Institute (KCRI)](http://www.kcri.ac.tz/).
+My wife and I use [zwets.com](http://zwets.com/) to blog about our life and work in Moshi, Tanzania.  She is a neurologist at [KCMC Hospital](http://www.kcmc.ac.tz/).  I work as a software programmer and bioinformatician at the associated [Kilimanjaro Clinical Research Institute (KCRI)](http://www.kcri.ac.tz/).
 
 ### And who is io@zwets.it?
 
