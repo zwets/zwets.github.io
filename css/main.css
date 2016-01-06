@@ -228,6 +228,22 @@ a:visited { color: #205caa; }
 .post-content ul,
 .post-content ol { padding-left: 20px; }
 
+.post-content strong { font-weight: 700; }
+
+.post-footer {
+  font-size: 15px;
+  color: #818181;
+  margin-top: 5px;
+}
+
+.post-footer a {
+  color: inherit;
+}
+
+.post-footer a:hover {
+  text-decoration: underline;
+}
+
 .post pre,
 .post code {
   border: 1px solid #d5d5e9;

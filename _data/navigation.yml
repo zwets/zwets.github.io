@@ -1,0 +1,22 @@
+# Site navigation links
+
+- title: Home
+  url: /
+  excerpt: "io.zwets.it"
+
+- title: Posts
+  url: /
+  excerpt: "Latest posts"
+
+- title: Notes
+  url: /notes/
+  excerpt: "Notes by category"
+
+- title: Links
+  url: /links/
+  excerpt: "Collected annotated links"
+
+- title: About
+  url: /about/
+  excerpt: "About this site"
+
