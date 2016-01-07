@@ -14,7 +14,7 @@ exclude: ["Gemfile", "Gemfile.lock", "README.md", "LICENSE","CNAME"]
 #future:      false
 #unpublished: false
 # Conversion
-#markdown:    kramdown
+markdown:    kramdown
 #highlighter: rouge
 highlighter: pygments
 #lsi:         false
@@ -28,9 +28,17 @@ timezone: Africa/Dar_es_Salaam
 #jekyll.environment: production # default is development?
 gems:
   - jekyll-sitemap
+
+# Kramdown options
 kramdown:
   input: GFM   # Github Flavoured Markdown
   toc_levels: 1..2
+  hard_wrap: false      # Override Github default
+#  auto_ids:       true
+#  footnote_nr:    1
+#  entity_output:  as_char
+#  toc_levels:     1..6
+#  smart_quotes:   lsquo,rsquo,ldquo,rdquo
 
 # (Non-overrideable) Github defaults
 #safe: true
