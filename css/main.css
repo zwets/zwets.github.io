@@ -220,9 +220,13 @@ a:visited { color: #205caa; }
   padding-left: 20px;
   font-size: 18px;
   opacity: .6;
-  letter-spacing: -1px;
+/*  letter-spacing: -1px; */
   font-style: italic;
   margin: 30px 0;
+}
+
+.post-content blockquote p {
+  margin-top: 0.5em;
 }
 
 .post-content ul,
