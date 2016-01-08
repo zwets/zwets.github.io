@@ -66,7 +66,10 @@ Kramdown can do footnotes[^1] and assign id, title and class to elements.
 
 Kramdown can do abbrs too.
 
-*[abbrs]: Abbreviations
+*[abbrs]: Abbreviations*
+
+kramdown
+: Definitions in Kramdown
 
 Kramdown code blocks are either indented by tab or four spaces, or use tilde as delimiters:
 
@@ -75,6 +78,13 @@ def what?
   42
 end
 ~~~
+
+Math support in Kramdown, requires including MathJax, visit http://gastonsanchez.com/blog/opinion/2014/02/16/Mathjax-with-jekyll.html
+
+$$
+\alpha \cdots \beta = 0.5
+$$
+
 
 ##### Footnotes
 [^1]: Kramdown can do footnotes

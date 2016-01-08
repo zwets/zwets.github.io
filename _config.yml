@@ -23,6 +23,7 @@ highlighter: pygments
 
 # Build settings
 markdown: kramdown
+#permalink: /:categories/:title/ # will trim the date off
 permalink: pretty
 timezone: Africa/Dar_es_Salaam
 #jekyll.environment: production # default is development?
