@@ -12,9 +12,9 @@
   url: /notes/
   excerpt: "Notes by category"
 
-- title: Links
-  url: /links/
-  excerpt: "Collected annotated links"
+#- title: Links
+#  url: /links/
+#  excerpt: "Collected annotated links"
 
 - title: About
   url: /about/
