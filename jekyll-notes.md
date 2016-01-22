@@ -57,6 +57,11 @@ bundle install gem jekyll-docs
 bundle exec jekyll docs
 {% endhighlight %}
 
+```bash
+# This should be highlighted on Github
+echo "But it seems it isn't"
+```
+
 ### Kramdown
 
 Kramdown can do footnotes[^1] and assign id, title and class to elements.
