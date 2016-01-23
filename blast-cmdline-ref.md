@@ -19,7 +19,7 @@ because the tools lack individual manpages and information is spread all over.
 ## BLAST Links
 
 * [All BLAST Documentation](http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs)
-* [Blast+ Command Line Applications User Manual](http://www.ncbi.nlm.nih.gov/books/NBK1763/), checked in to Zotero
+* [Blast+ Command Line Applications User Manual](http://www.ncbi.nlm.nih.gov/books/NBK1763/) (PDF)
 * [NCBI C++ Toolkit](http://ncbi.github.io/cxx-toolkit/) book and code on GitHub, the [examples](http://ncbi.github.io/cxx-toolkit/pages/ch_demo) describe `id1_fetch`.
 
 ## Search Programmes
@@ -498,36 +498,6 @@ TBD.
 
 The blast+ toolkit reads `.ncbirc` in current directory, user `$HOME` or directory `$NCBI`.  On Ubuntu, package `ncbi-data` installs `/etc/ncbi/.ncbirc` so set `export NCBI=/etc/ncbi` and add a [BLAST] section having at least `BLASTDB` pointing to the directory/ies containing Blast databases, and optionally `DATA_LOADERS`, `BLASTDB_PROT_DATA_LOADER`, `BLASTDB_NUCL_DATA_LOADER` for [identifier auto-resolution](#identifier-auto-resolution).
 
-### BLASTN reward/penalty values
-
-BLASTN uses a simple approach to score alignments, with matching bases assigned a reward and mismatching bases assigned a penalty. It is important to choose reward/penalty values appropriate to the sequences being alignedi, with (absolute) reward/penalty ratio increasing for more divergent sequences. Rules of thumb for the reward/penalty ratio are:
-
-* 0.33 (1/-3) is appropriate for sequences that are about 99% conserved; 
-* 0.5 (1/-2) is best for sequences that are 95% conserved; 
-* about unity (1/-1) is best for sequences that are 75% conserved.
-
-For each reward/penalty pair, a number of different gap costs are supported. Gap cost is a value to open the gap and a value to extend the gap by a base. Default costs are:
-
-* MegaBLAST: opening cost is 0, extension is half of the cost of two mismatches minus one match.
-* Other tasks of blastn: 5 to open a gap and 2 to extend one base.
-
-Table below presents the supported reward/penalty values and gap costs.  Blastn also supports gap costs more stringent than those listed.  Default megaBLAST gap costs are shown in the right-most column. Accurate statistics for these default megaBLAST gap costs can only be calculated for the most stringent reward/penalty values, but the values listed in the middle column can always be used.
-
-reward/penalty | gap costs (open/extend) | default MegaBLAST gap costs (open/extend) |
--+-+-|
-1/-5 | 3/3 | 0/5.5 |
-1/-4 | 1/2, 0/2, 2/1, 1/1 | 0/4.5 |
-2/-7 | 2/4, 0/4, 4/2, 2/2 | 0/8 |
-1/-3 | 2/2, 1/2, 0/2, 2/1, 1/1 | 0/3.5 |
-2/-5 | 2/4, 0/4, 4/2, 2/2 | 0/6 |
-1/-2 | 2/2, 1/2, 0/2, 3/1, 2/1, 1/1 | 0/2.5 |
-2/-3 | 4/4, 2/4, 0/4, 3/3, 6/2, 5/2, 4/2, 2/2 | 0/4 |
-3/-4 | 6/3, 5/3, 4/3, 6/2, 5/2, 4/2 | N/A |
-4/-5 | 6/5, 5/5, 4/5, 3/5 | N/A |
-1/-1 | 3/2, 2/2, 1/2, 0/2, 4/1, 3/1, 2/1 | N/A |
-3/-2 | 5/5 | N/A |
-5/-4 | 10/6, 8/6 | N/A |
-
 ### About Sequence Identifiers
 
 Defined [here](http://ncbi.github.io/cxx-toolkit/pages/ch_demo) as in tables below.  The "lcl" and "general database reference" (`gnl|MYDB|123`) (at least) work for `parse_seqid` and will be indexed in the resulting database.  Sequence identifiers can be concatenated separated by a vertical bar (who makes this up?).  So for instance `gi|1234|ref|NP_5432.1` would make the sequence retrievable (or filterable with `-gilist`) using any of `gi|1234|ref|NP_5432.1`, `1234`, `ref|NP_5432`, `NP_5432.1`, etc.  Any string following the space following an identifier will be the (unparsed) title for the sequence.
@@ -566,6 +536,36 @@ A flattened sequence ID has one of the following three formats, where square bra
 |19|TrEMBL|`tr|accession|name`|`tr|Q90RT2|Q90RT2_9HIV1`|
 |-|Genome pipeline (internal)|`gpp|accession|name`|`gpp|GPC_123456789|`|
 |-|Named annotation track (internal)|`nat|accession|name`|`nat|AT_123456789.1|`|
+
+### BLASTN reward/penalty values
+
+BLASTN uses a simple approach to score alignments, with matching bases assigned a reward and mismatching bases assigned a penalty. It is important to choose reward/penalty values appropriate to the sequences being alignedi, with (absolute) reward/penalty ratio increasing for more divergent sequences. Rules of thumb for the reward/penalty ratio are:
+
+* 0.33 (1/-3) is appropriate for sequences that are about 99% conserved; 
+* 0.5 (1/-2) is best for sequences that are 95% conserved; 
+* about unity (1/-1) is best for sequences that are 75% conserved.
+
+For each reward/penalty pair, a number of different gap costs are supported. Gap cost is a value to open the gap and a value to extend the gap by a base. Default costs are:
+
+* MegaBLAST: opening cost is 0, extension is half of the cost of two mismatches minus one match.
+* Other tasks of blastn: 5 to open a gap and 2 to extend one base.
+
+Table below presents the supported reward/penalty values and gap costs.  Blastn also supports gap costs more stringent than those listed.  Default megaBLAST gap costs are shown in the right-most column. Accurate statistics for these default megaBLAST gap costs can only be calculated for the most stringent reward/penalty values, but the values listed in the middle column can always be used.
+
+reward/penalty | gap costs (open/extend) | default MegaBLAST gap costs (open/extend) |
+-+-+-|
+1/-5 | 3/3 | 0/5.5 |
+1/-4 | 1/2, 0/2, 2/1, 1/1 | 0/4.5 |
+2/-7 | 2/4, 0/4, 4/2, 2/2 | 0/8 |
+1/-3 | 2/2, 1/2, 0/2, 2/1, 1/1 | 0/3.5 |
+2/-5 | 2/4, 0/4, 4/2, 2/2 | 0/6 |
+1/-2 | 2/2, 1/2, 0/2, 3/1, 2/1, 1/1 | 0/2.5 |
+2/-3 | 4/4, 2/4, 0/4, 3/3, 6/2, 5/2, 4/2, 2/2 | 0/4 |
+3/-4 | 6/3, 5/3, 4/3, 6/2, 5/2, 4/2 | N/A |
+4/-5 | 6/5, 5/5, 4/5, 3/5 | N/A |
+1/-1 | 3/2, 2/2, 1/2, 0/2, 4/1, 3/1, 2/1 | N/A |
+3/-2 | 5/5 | N/A |
+5/-4 | 10/6, 8/6 | N/A |
 
 ### legacy_blast
 
