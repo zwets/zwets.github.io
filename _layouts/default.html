@@ -1,10 +1,22 @@
 <!DOCTYPE html>
 <html>
 
-  {% include head.html %}
+  <head>
+    <meta charset="utf-8">
+    <title>{% if page.title %}{{ page.title }} • {% endif %}{{ site.title }}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="cleartype" content="on">
+    {% if page.excerpt %}<meta name="description" content="{{ page.excerpt | strip_html }}">{% endif %}
+    {% if page.tags %}<meta name="keywords" content="{{ page.tags | join: ', ' }}">{% endif %}
+    <meta name="viewport" content="width=device-width">
+    <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+    <link rel="stylesheet" href="{{ "/css/main.css" | prepend: site.baseurl }}">
+    <link rel="shortcut icon" href="{{ "/favicon.png" | prepend: site.baseurl }}">
+    <link rel="alternate" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" type="application/atom+xml" title="{{ site.title }} RSS Feed">
+    <link rel="sitemap" href="{{ "/sitemap.xml" | prepend: site.baseurl }}" type="application/xml" title="Sitemap">
+  </head>
 
-    <body>
-
+  <body>
     {% include header.html %}
 
     <div class="page-content">
@@ -14,6 +26,7 @@
     </div>
 
     {% include footer.html %}
+  </body>
 
-    </body>
 </html>
+
