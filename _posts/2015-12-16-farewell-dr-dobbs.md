@@ -1,6 +1,7 @@
 ---
 title: Farewell Dr Dobb's
 layout: post
+excerpt: "Public post of my letter to the editor when it was announced that Dr. Dobb's Journal, much to my grief, was being 'sunsetted' by its publishing house.  A eulogy to a historical magazine."
 ---
 
 On 16 December 2014, Editor in Chief Andrew Binstock [announced](http://www.drdobbs.com/architecture-and-design/farewell-dr-dobbs/240169421#) that after 38 years publisher UBM was "sunsetting Dr. Dobb's".  I owe my career in IT in large part to _"Dr. Dobb's Journal of Computer Calisthenics and Orthodontia: Running Light without Overbyte"_.  I started reading "DDJ" in 1987, when none of my friends in university even _thought_ about owning a personal computer.  I followed along with Bill and Lynne Jolitz's "roll your own operating system" article series as they developed 386BSD (a port to the 80386 platform of BSD, from which FreeBSD and NetBSD later forked).  I recall the excitement of discovering new inventions such as CORBA, Linux, HTTP, the WWW, and getting to understand exactly how they worked.  I admired the code written by contributing authors and columnists.  DDJ was written and read by hackers with a shared passion for programming, for *making* things, for harnessing the technology that would revolutionise the world.

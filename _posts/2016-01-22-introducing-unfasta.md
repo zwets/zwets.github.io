@@ -1,7 +1,7 @@
 ---
 title: Introducing Unfasta 
-permalink: /unfasta/
 layout: post
+excerpt: "Unfasta is a suite of command-line utilities for working with sequence data.  The rationale behind unfasta is to have the ability to process genomic sequence data using simple standard utilities, in the common pipes and filters style of Unix and GNU."
 ---
 
 [Unfasta](http://github.com/zwets/unfasta) is a suite of command-line utilities for working with sequence data.

@@ -2,6 +2,7 @@
 title: About
 permalink: /about/
 layout: page
+excerpt: "About io.zwets.it"
 ---
 
 ## Introducing io.zwets.it

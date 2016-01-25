@@ -1,6 +1,7 @@
 ---
 title: Blessed Redshift
 layout: post
+excerpt: "An encomiastic endorsement of whoever came up with redshift."
 ---
 
 Some days ago on the Guix-devel mailing list Florian Paul Schmidt [mentioned](https://lists.gnu.org/archive/html/guix-devel/2015-11/msg00607.html) Redshift.  [Redshift](https://github.com/jonls/redshift/) adjusts the colour temperature of your screen according to the time of day, reducing strain on your eyes at night.

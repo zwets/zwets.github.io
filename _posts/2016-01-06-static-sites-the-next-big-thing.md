@@ -1,6 +1,7 @@
 ---
 title: "Static sites the next big thing"
 layout: post
+excerpt: "Plus ça change ... static sites are all the hype."
 ---
 
 It says so in the email I just received.
@@ -29,5 +30,5 @@ Simon St. Laurent
 Strategic Content Director
 ```
 
-Right when I'm getting serious with [Jekyll](http://jekyllrb.com).  There, skipped HTML 2 through 5 but now I'm back ahead of the pack.  For completeness: the free copy can be [got here](http://conferences.oreilly.com/fluent/javascript-html-us/public/content/static-site-generators).
+Right when I'm getting serious with [Jekyll](http://jekyllrb.com).  There, skipped HTML 2 through 5 but now I'm back ahead of the pack.  For completeness: the free copy referred to can be [got here](http://conferences.oreilly.com/fluent/javascript-html-us/public/content/static-site-generators).
 

@@ -3,6 +3,7 @@ title: Jekyll Notes
 layout: page
 category: notes
 tags: jekyll, github, markdown
+excerpt: Scratch page with Jekyll and (GitHub flavoured) Markdown samples and links.
 ignore: { permalink, category, categories, tags, published }
 ---
 

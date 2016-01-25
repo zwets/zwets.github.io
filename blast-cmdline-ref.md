@@ -3,7 +3,7 @@ title: BLAST Command-line Reference
 permalink: /blast-cmdline-ref/
 layout: page
 categories: notes
-excerpt: Command-line reference for the NCBI BLAST suite
+excerpt: "Command-line reference for the NCBI BLAST suite, reorganised because the tools lack individual man pages and information is spread all over."
 tags: blast
 ---
 

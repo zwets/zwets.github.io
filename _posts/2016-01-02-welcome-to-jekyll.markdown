@@ -3,6 +3,7 @@ layout: post
 title:  "Welcome to Jekyll!"
 date:   2016-01-02 21:04:23
 categories: jekyll update
+excerpt: "Boilerplate page comes with Jekyll."
 published: false
 ---
 

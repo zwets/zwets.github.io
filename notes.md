@@ -1,6 +1,7 @@
 ---
 title: Notes
 permalink: /notes/
+excerpt: Overview of various notes I keep for myself and which may be useful to others.
 layout: archive
 ---
 
