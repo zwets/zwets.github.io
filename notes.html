@@ -1,0 +1,21 @@
+---
+title: Notes
+permalink: /notes/
+excerpt: Notes I keep for myself and which may be useful to others.
+layout: archive
+---
+
+<div class="notes">
+
+  <p>Should show a list below but I can't seem to figure out the Jekyll / Liquid incantation</p>
+
+  <ul class="pages">
+    {% for page in site.categories.notes %}
+      <li>
+        <a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+        <span class="page-date">{{ page.date | date: "%b %-d, %Y" }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+
+</div>

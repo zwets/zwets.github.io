@@ -2,7 +2,7 @@
 title: BLAST Command-line Reference
 permalink: /blast-cmdline-ref/
 layout: page
-categories: notes
+category: notes
 excerpt: "Command-line reference for the NCBI BLAST suite, reorganised because the tools lack individual man pages and information is spread all over."
 tags: blast
 ---
@@ -65,14 +65,14 @@ The BLAST search programmes share the following set of shared options.
 |`searchsp`|integer|none|Effective length of the search space|
 |`import_search_strategy`|string|none|Search strategy file to read.|
 |`export_search_strategy`|string|none|Record search strategy to this file.|
-|`parse_deflines`|flag|N/A|Parse query and subject bar delimited sequence identifiers (e.g., gi|129295).|
+|`parse_deflines`|flag|N/A|Parse query and subject bar delimited sequence identifiers (e.g., gi\|129295).|
 |`num_threads`|integer|1|Number of threads (CPUs) to use in blast search.|
 |`remote`|flag|N/A|Execute search on NCBI servers?|
-|`outfmt`|string|0|Alignment view options (see [below](#alignment-view-options)|
+|`outfmt`|string|0|Alignment view options (see [below](#alignment-view-options))|
 
-#### Alignment View options
+#### Alignment View options (outfmt values)
 
-Note: options 6, 7, and 10 can be additionally configured to produce a custom format specified by space delimited format specifiers (see [format specifiers below](#search-outfmt-specifiers).
+Note: options 6, 7, and 10 can be additionally configured to produce a custom format specified by space delimited format specifiers (see [format specifiers below](#search-output-specifiers)).
 
 `0` | pairwise (default) 
 `1` | query-anchored showing identities,
@@ -373,7 +373,7 @@ Makeblastdb application options. This application builds a BLAST database.  Note
 |`input_type`|string|fasta|Input file type, it may be any of fasta, blastdb, asn1\_txt, asn1\_bin|
 |`dbtype`|string|prot|Molecule type of input, values can be nucl or prot.|
 |`title`|string|none|Title for BLAST database. If not set, the input file name will be used.|
-|`parse_seqids`|flag|N/A|Parse bar delimited sequence identifiers (e.g., gi|129295) in FASTA input, so they can be used to filter queries on identifier lists. See section [About Sequence Identifiers](#about-sequence-identifiers) below.|
+|`parse_seqids`|flag|N/A|Parse bar delimited sequence identifiers (e.g., gi\|129295) in FASTA input, so they can be used to filter queries on identifier lists. See section [About Sequence Identifiers](#about-sequence-identifiers) below.|
 |`hash_index`|flag|N/A|Create index of sequence hash values.|
 |`mask_data`|string|none|Comma-separated list of input files containing masking data as produced by NCBI masking applications (e.g. dustmasker, segmasker, windowmasker).|
 |`max_file_size`|string|1GB|Maximum file size to use for BLAST database.|
@@ -465,8 +465,24 @@ Note that all specifiers except `%f` (default) produce a single line per result.
 
 ### BLASTDB\_ALIASTOOL options
 
-Create an alias to a subset of a database (selected on GI list), or to an aggregation of multiple databases.  Or create optimised list of GI's to pass to the `-gilist` argument to the search commands.
+Optimise a textual GI list into a binary list: 
 
+    blastdb_aliastool -gi_file_in gilist.txt -gi_file_out gilist.bin
+
+Create an aliased database using a GI list (use a binary GI list or the tool will create it; note that the GI list must stay with the generated `.nal` file):
+
+    blastdb_aliastool -db nt -dbtype nucl -title "Subset database" -gilist gilist.bin -out subsetdb
+
+To create a subset database for a specific taxonomy ID', generate the GI list first.  Ways of doing this:
+* Use the `gi_taxid_{nucl,prot}.dmp` GI-taxid mapping files from [ftp://ftp.ncbi.nih.gov/pub/taxonomy/](ftp://ftp.ncbi.nih.gov/pub/taxonomy/) (see the [readme](ftp://ftp.ncbi.nih.gov/pub/taxonomy/gi_taxid.readme))
+* Perform an [Entrez query](http://www.ncbi.nlm.nih.gov/protein) with query `txidXXXX[ORGN]` where `XXXX` is the taxid, then choose "Send to File" and select GI List (suggested [here](https://www.biostars.org/p/6528/)
+* Trawl recursively trought the taxdump `nodes` and `names` files from the archive at [ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz](ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz)
+
+Create an alias for a multi-volume BLAST database:
+
+```bash
+blastdb_aliastool -dblist ... -num_volumes ...
+```
 
 ### seqdb_perf
 

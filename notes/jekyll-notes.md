@@ -44,23 +44,18 @@ ignore: { permalink, category, categories, tags, published }
 From the Jekyll site
 
 {: .terminal }
-{% highlight bash %}
+```bash
 echo "source 'https://rubygems.org'" > Gemfile
 echo "gem 'github-pages'" >> Gemfile
 bundle install
 bundle update # regularly
 bundle exec jekyll serve
-{% endhighlight %}
+```
 
-{% highlight bash %}
+```bash
 # Seems to be broken
 bundle install gem jekyll-docs
 bundle exec jekyll docs
-{% endhighlight %}
-
-```bash
-# This should be highlighted on Github
-echo "But it seems it isn't"
 ```
 
 ### Kramdown

@@ -14,15 +14,14 @@ exclude: ["Gemfile", "Gemfile.lock", "README.md", "LICENSE","CNAME"]
 #future:      false
 #unpublished: false
 # Conversion
-markdown:    kramdown
-#highlighter: rouge
-highlighter: pygments
+#markdown:    kramdown # default since GH on Jekyll 3
+#highlighter: rouge # default since GH went to Jekyll 3
 #lsi:         false
 #excerpt_separator: "\n\n"
 #incremental: false
 
 # Build settings
-markdown: kramdown
+#markdown: kramdown
 #permalink: /:categories/:title/ # will trim the date off
 permalink: pretty
 timezone: Africa/Dar_es_Salaam

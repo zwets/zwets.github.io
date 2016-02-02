@@ -10,10 +10,10 @@ The rationale behind unfasta is to have the ability to process genomic sequence 
 
 For instance,
 
-{% highlight bash %}
+```bash
 # Compute the GC content of all sequences in a FASTA file
 uf 'file.fa' | sed -n '2~2p' | tr -dc 'GC' | wc -c
-{% endhighlight %}
+```
 
 In that pipeline,
 
@@ -28,7 +28,7 @@ Unfasta resolves the issue by converting FASTA format to 'unfasta format' when i
 
 Some examples to illustrate the benefits of single-line sequence data:
 
-{% highlight bash %}
+```bash
 # Extract all deflines using sed or awk
 $ sed -n 1~2p
 $ awk 'NR%2==1'
@@ -50,7 +50,7 @@ $ awk '/Borrelia/ { getline; print length; }'
 
 # Does any sequence contain fragment 'ACGTATAGCGGC'? 
 $ fgrep -q 'ACGTATAGCGGC' && echo "Yes" || echo "No"
-{% endhighlight %}
+```
 
 Unfasta isn't intended as the be-all and end-all of genomic sequence processing.  It won't work for everyone.  It does for me because I usually work in bash and have been using the Unix/GNU toolset for over two decades.  In that same period I have written software in at least a dozen 'proper' programming languages, but when it comes to string processing nothing beats piping together a one-liner in bash.
 
