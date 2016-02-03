@@ -6,7 +6,7 @@ description: "Marco van Zwetselaar's IT domain"
 url: "http://io.zwets.it"
 github_username:  zwets
 TZ: Africa/Dar_es_Salaam
-exclude: ["Gemfile", "Gemfile.lock", "README.md", "LICENSE","CNAME"]
+exclude: ["Gemfile", "Gemfile.lock", "README.md", "LICENSE", "CNAME", "new-post.sh"]
 #include: [".htaccess"] # default, because dotfiles otherwise ignored in generation
 #keep_files: [".git",".svn"] # files in destination that should remain (but Github might clear all?)
 #show_drafts: null
