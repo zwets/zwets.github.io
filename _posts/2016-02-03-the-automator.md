@@ -17,7 +17,7 @@ Much of what I keep in my [public repositories](https://github.com/zwets) are sh
 
 ###### Footnotes
 
-[^1]: Either straight off the shelf, like [taxo](https://github.com/zwets/blast-galley/taxo) to search and browse the NCBI taxonomy, or as a starting point, like this [in-silico PCR script](https://github.com/zwets/blast-galley/in-silico-pcr).
+[^1]: Either straight off the shelf, like [taxo](https://github.com/zwets/blast-galley/blob/master/taxo) to search and browse the NCBI taxonomy, or as a starting point, like this [in-silico PCR script](https://github.com/zwets/blast-galley/blob/master/in-silico-pcr.sh).  Both are in my [blast-galley](https://github.com/zwets/blast-galley) repository.
 
 [^2]: You don't?  I'd hold off the cheers until you cross the age of forty.
 
