@@ -1,8 +1,8 @@
 ---
 title: Total Perspective Vortex
 layout: post
-excerpt: "Experience the Evolutionary Total Perspective Vortex at [OneZoom](http://onezoom.org)."
-published: false
+excerpt: "The Evolutionary Total Perspective Vortex at [OneZoom](http://onezoom.org)."
+published: true
 ---
 
 As a child I read about the Milky Way but never saw it.  I didn't 
