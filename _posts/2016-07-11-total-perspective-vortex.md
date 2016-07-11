@@ -27,14 +27,14 @@ you see are only *our* galaxy.  Our galaxy is one of 200,000,000,000
 galaxies.
 
 Having seen Earth in its place relative to the universe as a whole,
-here is the clincher.  Take a look at the position of us humans vis-a-vis
+here is the clincher.  Take a look at the place of us humans vis-a-vis
 all other life forms on Earth.  A number of web sites catalogue the so-called
 *Tree of Life*, the evolutionary tree branching out into all known
 - and many more unknown - species.  [OneZoom](http://onezoom.org/) takes 
 this to a whole new level.
 
 Spend some time [navigating the tree](http://www.onezoom.org/life.html),
-then try to find us, the species homo sapiens.  You probably won't, it's
-a long way down.  This [dizzying trip](http://www.onezoom.org/life.html?init=zoom#Homininae) 
-takes you there.  Welcome to the Evolutionary Total Perspective Vortex.
+then try to find us, homo sapiens.  You probably won't, it's a [long
+way down](http://www.onezoom.org/life.html?init=zoom#Homininae).
+Welcome to the Evolutionary Total Perspective Vortex.
 
