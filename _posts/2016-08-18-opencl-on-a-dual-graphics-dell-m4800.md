@@ -6,7 +6,8 @@ published: true
 ---
 
 
-This post documents how I got OpenCL working on a dual graphics Dell M4800 workstation running Ubuntu 16.04.
+This post documents how I got OpenCL working on Ubuntu 16.04 on my dual (hybrid) graphics Dell M4800
+workstation.  The machine has an integrated Intel HD Graphics 4600 GPU, and a discrete AMD/ATI Radeon HD 8870M.
 
 
 ## Background
@@ -18,7 +19,7 @@ vendors through the OpenCL standard.
 
 I prefer to keep my Ubuntu 16.04 plain vanilla, that is stick with packages available in the distro.[^1]
 I avoid PPAs, `sudo make install` and certainly `sudo ./run-installer.sh`.  My worry was that installing
-OpenCL would involve a lot of the latter, but it turned out that `apt-get install` goes a long way.
+OpenCL would involve a lot of the latter, but it turned out that `apt-get install` gets you a long way.
 
 Below is my install log. YMMV.
 
@@ -33,14 +34,14 @@ $ lspci | grep VGA
 01:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Venus XT [Radeon HD 8870M / R9 M270X/M370X] (rev ff)
 ```
 
-Ubuntu does not suggest proprietary drivers for my GPUs:
+Ubuntu suggests no proprietary drivers for my GPUs:
 
 ```bash
 $ ubuntu-drivers list
 intel-microcode		# Driver for the CPU, not the GPU
 ```
 
-Instead the open source drivers from the kernel tree are in use and under control of kernel mode switching:
+The DRM driver modules are `i915` and `radeon`; they participate in kernel mode switching:
 
 ```bash
 $ lsmod | grep drm_kms_helper
@@ -50,8 +51,7 @@ linux-image-extra-4.4.0-34-generic: /lib/modules/4.4.0-34-generic/kernel/drivers
 linux-image-extra-4.4.0-34-generic: /lib/modules/4.4.0-34-generic/kernel/drivers/gpu/drm/radeon/radeon.ko
 ```
 
-By default the Intel IGD is powered on, the AMD 'discrete' card is idle (`vgaswitcheroo` is a legacy method
-for switching between GPUs; its kernel interface is still there):
+The Intel integrated GPU (IGD) is powered on, the AMD discrete GPU (DIS) is idle:
 
 ```bash
 $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
@@ -59,11 +59,15 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 1:IGD:+:Pwr:0000:00:02.0
 2:DIS-Audio: :Off:0000:01:00.1
 ```
+(`vga_switcheroo` is the legacy kludge for hybrid graphics systems.  It is being replaced by
+'muxless hybrid graphics', however switcheroo's kernel interface is still there.)
 
 
-## Sidestep: switching graphics rendering
+## Sidestep: muxless graphics switching
 
-Switching between the Intel IGD and the AMD Radeon for graphics rendering is simpler than it used to be:
+This section is not directly relevant for OpenCL.  It documents how to switch from the integrated GPU
+to the discrete GPU for rendering.  This is now much simpler than in the switcheroo-days, and can even
+be done for a single application.  All it requires is setting an environment variable. 
 
 ```bash
 $ xrandr --listproviders
@@ -73,41 +77,45 @@ Provider 1: id: 0x49 cap: 0x6, Sink Output, Source Offload crtcs: 6 outputs: 4 a
 Provider 2: id: 0x49 cap: 0x6, Sink Output, Source Offload crtcs: 6 outputs: 4 associated providers: 2 name:VERDE @ pci:0000:01:00.0
 
 $ DRI_PRIME=0 glxgears -info | grep -E '(GL_RENDERER|FPS)'
-GL_RENDERER   = Mesa DRI Intel(R) Haswell Mobile 
-305 frames in 5.0 seconds = 60.871 FPS
+GL_RENDERER   = Mesa DRI Intel(R) Haswell Mobile        # Intel renders
+305 frames in 5.0 seconds = 60.871 FPS                  # at rate synced with monitor
 
 $ DRI_PRIME=1 glxgears -info | grep -E '(GL_RENDERER|FPS)'
 GL_RENDERER   = Gallium 0.4 on AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
-70041 frames in 5.0 seconds = 14008.121 FPS
+70041 frames in 5.0 seconds = 14008.121 FPS             # AMD renders ... faster
+
+$ DRI_PRIME=2 glxgears -info | grep -E '(GL_RENDERER|FPS)'
+GL_RENDERER   = Mesa DRI Intel(R) Haswell Mobile 	# Surprise: Intel renders,
+53971 frames in 5.0 seconds = 10793.093 FPS		# but this time not synced to 60Hz
 ```
 
-Note that according to 
+When `DRI_PRIME` is 0 or unset, the Intel is selected.  Its rendering frequency is 60Hz,
+synchronised with the monitor refresh rate.  `DRI_PRIME=1` selects the AMD Radeon.
+`DRI_PRIME=2` (or any higher value) selects the Intel, but without synchronised rendering.
+
+I was surprised to see the high frame rate on the IGD.  Even if it is 30% below the discrete
+GPU, it is still considerable.  Just because it is an integrated GPU, doesn't mean that it can't
+be used for computing.
+
+It will be interesting to see what frame rates can be achieved with the AMD proprietary
+(Catalyst) driver.  We'll get back to that.
+
+
+**Note:** According to 
 [this page](http://askubuntu.com/questions/593098/hybrid-graphic-card-drivers-amd-radeon-hd-8570-intel-hd-graphics-4000/620756#620756)
-we must first do `xrandr --setprovideroffloadsink 0x49 0x72` to make device 0x49 (*VERDE* is the
-codename for my AMD card) the rendering offload device for the Intel, but I get the exact same
-results when I don't. ([May be related to DRI3?](https://wiki.archlinux.org/index.php/PRIME))
-
-While `glxgears` is running the DIS card is powered on (`sudo cat /sys/kernel/debug/vgaswitcheroo/switch`),
-and you could use `sudo radeontop` to see some live statistics.
-
-A interesting finding is that when `DRI_PRIME=0` or unset, the rendering frequency is synchronised
-with the monitor refresh rate, whereas when I set `DRI_PRIME=2` (or any higher value), I get the
-Intel renderer but without the synchronised rendering:
-
-```bash
-$ DRI_PRIME=42 glxgears -info | grep -E '(GL_RENDERER|FPS)'
-GL_RENDERER   = Mesa DRI Intel(R) Haswell Mobile 
-53971 frames in 5.0 seconds = 10793.093 FPS
-```
-
-Though 30% lower than the discrete card (with the open source driver), its frame rate is still
-considerable.  As we'll see, just because it is an integrated GPU, doesn't mean that it is a dud
-for parallel computing.
+it is required to do `xrandr --setprovideroffloadsink` to make `DRI_PRIME` work, 
+but I get the exact same results when I don't.  ([May be related to DRI3?](https://wiki.archlinux.org/index.php/PRIME))
 
 
 ## Installing OpenCL
 
-Back to OpenCL.  Installing `clinfo` pulls in package `ocl-icd-libopencl1` which sets up the basic
+Installing OpenCL involves three layers: 
+
+* the API library and implementation loader (ICD Loader)
+* one or more vendor-specific implementations (ICDs)
+* DRM/DRI hardware device drivers
+
+Installing `clinfo` pulls in package `ocl-icd-libopencl1` which sets up the top layer of the
 OpenCL infrastructure:
 
 ```bash
@@ -117,13 +125,13 @@ Number of platforms   0
 ```
 
 Package `ocl-icd-libopencl1` provides `libOpenCL`, the library against which OpenCL applications
-are linked.  It provides the *ICD Loader*, the machinery that dynamically loads "ICDs", the 
-installable client drivers which implement the vendor-specific interaction with the hardware.
+are linked.  It provides the ICD Loader, the machinery that dynamically loads ICDs.  The ICDs
+(installable client drivers) implement the vendor-specific interaction with the hardware.
 
-Each ICD is defined by a file with extension **.icd** in directory `/etc/OpenCL/vendors`.  The
-first line in the ICD file specifies the path to a shared library which is `dlopen`ed by the ICD
-Loader when that platform is requested.  Environment variables can be used to influence platform
-order, default, and debugging level (see `man libOpenCL`).
+An ICD is defined by a file with extension `.icd` in directory `/etc/OpenCL/vendors`.  The
+first line in the ICD file specifies the path to a shared library.  The ICD Loader `dlopen`s
+this library when that platform is requested.  Environment variables regulate the order of the
+platforms, the default, and the debugging level.
 
 
 ## Installing ICDs
@@ -137,8 +145,10 @@ beignet-opencl-icd - OpenCL library for Intel GPUs
 nvidia-opencl-icd-304 - NVIDIA OpenCL ICD
 mesa-opencl-icd - free implementation of the OpenCL API -- ICD runtime
 ... more ...
+
 $ apt-cache show beignet-opencl-icd
 ... supports the integrated GPUs of Ivy Bridge, Bay Trail, Haswell and Broadwell processors
+
 $ apt-cache depends mesa-opencl-icd
 ... r600, amdgcn, amdgpu1, radeon1, nouveau2 ...
 ```
@@ -147,33 +157,45 @@ Installing the Intel and Mesa ICDs gives us two platforms:
 
 ```bash
 $ sudo apt-get install beignet-opencl-icd mesa-opencl-icd
-$ clinfo
-Number of platforms   2
-... lots of details about the platforms ...
+$ clinfo -l
+$ clinfo -l
+Platform #0: Intel Gen OCL Driver
+ `-- Device #0: Intel(R) HD Graphics Haswell GT2 Mobile
+Platform #1: Clover
+ `-- Device #0: AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
 ```
 
-@@@ MORE @@@
+`clinfo --human` and `clinfo --raw` produce detailed overviews of the features of the
+platforms.  @@@ TODO @@@ table comparing the significant differences.
 
 
-## Installing the AMD SDK
+## Hitting the asfalt
+
+Andreas Klöckner's wiki has an [OpenCL HOWTO](https://wiki.tiker.net/OpenCLHowTo) which
+links to demo code (tools-master) for testing OpenCL.  His site has 
+[lots more](https://wiki.tiker.net/WelcomePage) on OpenCL, CUDA, PyOpenCL, Numpy, Boost, 
+etc.
+
+Erik Smistad has a nice 
+[hands-on article](https://www.eriksmistad.no/getting-started-with-opencl-and-gpu-computing/)
+with C sample code.  It is from 2010 so may be out of date.
+
+@@@ TODO @@@
+
+## Installing the AMD Catalyst driver
+
+## Installing the AMD Accelerated Parallel Processing (APP) SDK
 
 * [AMD OpenCL Zone](http://developer.amd.com/tools-and-sdks/opencl-zone/opencl-resources/getting-started-with-opencl/)
 * [AMD APP SDK](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/)
 * [AMD Catalyst Driver](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst)
 
 
+## Further steps
 
-I run plain Ubuntu 16.04 and prefer not to install 
-
-
-integrated Intel GPU and an AMD ATI Radeon runs plain Ubuntu 16.04.
-
-Intel and AMD both have an OpenCL SDK.
-
-### Drivers, ICDs and OpenCL
-
-### Ubuntu OpenCL packages
-
+* StarPU
+* erlang-cl, pyopencl
+* arrayfire, 
 
 ###### Footnotes
 
