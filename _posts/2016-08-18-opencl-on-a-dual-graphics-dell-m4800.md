@@ -2,7 +2,7 @@
 title: OpenCL on a dual graphics Dell M4800
 layout: post
 excerpt: "Documenting how I got OpenCL working on my dual graphics Dell M4800 workstation running plain vanilla Ubuntu 16.04."
-published: false
+published: true
 ---
 
 
@@ -107,7 +107,8 @@ for parallel computing.
 
 ## Installing OpenCL
 
-Back to OpenCL.  Installing `clinfo` pulls in the basic infrastructure:
+Back to OpenCL.  Installing `clinfo` pulls in package `ocl-icd-libopencl1` which sets up the basic
+OpenCL infrastructure:
 
 ```bash
 $ sudo apt-get install clinfo
@@ -115,13 +116,34 @@ $ clinfo
 Number of platforms   0
 ```
 
-Installing clinfo also installs package `ocl-icd-libopencl1` which contains `libOpenCL`, the
-library against which OpenCL applications are linked, and which provides the *ICD Loader*.  
-The ICD Loader is the machinery that dynamically load "ICDs", installable client drivers
-which implement the vendor-specific interaction with the hardware (through device drivers).
-`man libOpenCL` gives a concise and clear overview.
+Package `ocl-icd-libopencl1` provides `libOpenCL`, the library against which OpenCL applications
+are linked.  It provides the *ICD Loader*, the machinery that dynamically loads "ICDs", the 
+installable client drivers which implement the vendor-specific interaction with the hardware.
 
-Now we need platforms.  Beignet is for Intel, MESA for the open source Radeon driver.
+Each ICD is defined by a file with extension **.icd** in directory `/etc/OpenCL/vendors`.  The
+first line in the ICD file specifies the path to a shared library which is `dlopen`ed by the ICD
+Loader when that platform is requested.  Environment variables can be used to influence platform
+order, default, and debugging level (see `man libOpenCL`).
+
+
+## Installing ICDs
+
+Ubuntu provides ICDs for Intel and Nvidia GPUs.  AMD is supported via the Mesa ICP, which 
+implements OpenCL in terms of the free (non-proprietary) DRM/DRI drivers.
+
+```bash
+$ apt-cache search '^opencl-icd$'
+beignet-opencl-icd - OpenCL library for Intel GPUs
+nvidia-opencl-icd-304 - NVIDIA OpenCL ICD
+mesa-opencl-icd - free implementation of the OpenCL API -- ICD runtime
+... more ...
+$ apt-cache show beignet-opencl-icd
+... supports the integrated GPUs of Ivy Bridge, Bay Trail, Haswell and Broadwell processors
+$ apt-cache depends mesa-opencl-icd
+... r600, amdgcn, amdgpu1, radeon1, nouveau2 ...
+```
+
+Installing the Intel and Mesa ICDs gives us two platforms:
 
 ```bash
 $ sudo apt-get install beignet-opencl-icd mesa-opencl-icd
