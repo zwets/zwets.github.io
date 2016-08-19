@@ -238,13 +238,20 @@ is available from their
 
 @@@ TODO: test this installer @@@
 
-#### AMD's GPU driver
+#### AMD's GPU drivers
 
 AMD's OpenCL GPU (and CPU) ICD comes with the
 [Catalyst driver for Radeon](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst).
 Refer to "MD5 Checksums, System Requirements & Driver Compatibility" on the 
 [AMD APP SDK page](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/)
 to locate the appropriate driver.
+
+**However** the Catalyst (formerly fglrx) driver was removed from Ubuntu, and now seems to be
+replaced by the AMDGPU + AMDGPU-PRO, which will be GPL, *is* supported on Ubuntu *and has OpenCL 1.2 support*.
+combination.  Read more about it [here](http://www.pcworld.com/article/3075837/linux/amds-gaming-optimized-amdgpu-pro-driver-for-linux-is-in-beta.html)
+and on [AMD's AMDGPU-PRO page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx)
+which has installation instructions, compatibility lists, and the like.
+
 
 #### Intel and AMD's SDKs
 
