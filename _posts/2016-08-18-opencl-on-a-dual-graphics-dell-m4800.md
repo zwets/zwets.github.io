@@ -158,26 +158,28 @@ Install the Intel and Mesa ICDs to obtain the relevant platforms:
 ```bash
 $ sudo apt-get install beignet-opencl-icd mesa-opencl-icd
 $ clinfo -l
-Platform #0: Intel Gen OCL Driver
- `-- Device #0: Intel(R) HD Graphics Haswell GT2 Mobile
-Platform #1: Clover
- `-- Device #0: AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
+Platform 0: Intel Gen OCL Driver
+ `-- Device 0: Intel(R) HD Graphics Haswell GT2 Mobile
+Platform 1: Clover
+ `-- Device 0: AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
 ```
 
-Each platform could provide a number of devices.  On my system it is one device on either
-platform.  Run `clinfo` without the `-l` argument to get a detailed overview of the platforms,
-and of the features of each device.
+Run `clinfo` without `-l` to get a detailed overview of the platforms and the features of each device.
 
-@@@ TODO @@@ table comparing the significant differences between my platforms (use `clinfo --raw).
+@@@ TODO @@@ table comparing the significant differences between my platforms (use `clinfo --raw`).
 
 
 ## Hitting the asphalt
 
 Andreas Klöckner's wiki has an [OpenCL HOWTO](https://wiki.tiker.net/OpenCLHowTo) with
-with links to [demo and testing code](https://github.com/hpc12/tools):
+[demo and testing code](https://github.com/hpc12/tools), as well as 
+[lots more](https://wiki.tiker.net/WelcomePage) on OpenCL, CUDA, PyOpenCL, and the like.
+
+Test using his cl-demo:
 
 ```bash
-$ git clone 'https://github.com/hpc12/tools'
+$ git clone 'https://github.com/hpc12/tools' hpc12-tools
+$ cd hpc12-tools
 $ make
 $ ./cl-demo 1000000 10
 Choose platform:
@@ -193,35 +195,74 @@ Enter choice: 0
 GOOD
 ```
 
-Andreas's wiki has [lots more](https://wiki.tiker.net/WelcomePage) on OpenCL, CUDA, PyOpenCL,
-Numpy, Boost, and other HPC resources.
+Good. Repeat for the Mesa/Clover platform and we're good to go.
 
-@@@ TODO @@@ Erik Smistad has a nice 
-[hands-on article](https://www.eriksmistad.no/getting-started-with-opencl-and-gpu-computing/)
-with C sample code (note: from 2010 so may be out of date?)
 
-**Note:** Both articles point out the convenience of AMD's ICD Loader: it can seemlessly
-switch between CPU and GPU.
+## Going further
 
-@@@ TODO @@@
+We have a working OpenCL system supporting both graphics cards, using only `apt-get install`
+and the standard Ubuntu repositories.  What is missing is an OpenCL driver for the **CPU**.
+Also, it would be interesting to see how the open source drivers measure up to the Intel 
+and AMD proprietary drivers.  Finally, for those who can't get enough of this, there are
+the Intel and AMD SDKs: toolchains containing everything and the kitchen sink for OpenCL
+development.
 
-## Installing the AMD Catalyst driver
+#### CPU driver
 
-## Installing the AMD Accelerated Parallel Processing (APP) SDK
+Both AMD and Intel offer an OpenCL CPU driver.
 
-* [AMD OpenCL Zone](http://developer.amd.com/tools-and-sdks/opencl-zone/opencl-resources/getting-started-with-opencl/)
-* [AMD APP SDK](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/)
-* [AMD Catalyst Driver](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst)
+Intel's "OpenCL™ Runtime for Intel® Core™ and Intel® Xeon® Processors" can be downloaded from their
+[OpenCL™ Drivers and Runtimes for Intel® Architecture](https://software.intel.com/en-us/articles/opencl-drivers) page.
+[This page](https://bitbucket.org/snippets/bkchr/EkeMg) describes a way to turn it into a .deb
+package for installation on Ubuntu 16.04.  Note however the comment at the bottom of that page
+mentioning that `install.sh` or `install_GUI.sh` should equally work now that Intel officially
+supports the driver on Ubuntu.
 
+AMD's CPU driver, which supports both AMD and Intel CPUs, comes with the GPU driver (see below).
+If you want to install *only* the CPU driver, then Andreas Klöckner 
+[describes a hack](https://wiki.tiker.net/OpenCLHowTo#Installing_the_AMD_ICD_loader_and_CPU_ICD_.28from_the_driver_package--probably_unsupported.29)
+to extract the CPU driver from the Catalyst driver package.
+
+@@@ TODO: test the Intel installer @@@
+
+The main issue with these proprietary installers is that they often do not just unstall the ICD
+and its required libraries, but also libOpenCL or other libraries already provided by Ubuntu or
+or another ICD runtime.  They may also e.g. change the system-wide `LD_LIBRARY_PATH` (which has
+the same effect).
+
+#### Intel's GPU driver
+
+Intel's "OpenCL™ 2.0 Driver+Runtime for Intel® HD, Iris™, and Iris™ Pro Graphics for Linux"
+is available from their 
+[OpenCL™ Drivers and Runtimes for Intel® Architecture](https://software.intel.com/en-us/articles/opencl-drivers) page.
+
+@@@ TODO: test this installer @@@
+
+#### AMD's GPU driver
+
+AMD's OpenCL GPU (and CPU) ICD comes with the
+[Catalyst driver for Radeon](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst).
+Refer to "MD5 Checksums, System Requirements & Driver Compatibility" on the 
+[AMD APP SDK page](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/)
+to locate the appropriate driver.
+
+#### Intel and AMD's SDKs
+
+AMD distributes the 
+[AMD Accelerated Parallel Processing (APP) SDK](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/),
+and Intel has its
+[Intel SDK for OpenCL Applications](https://software.intel.com/en-us/articles/opencl-drivers).
+
+I will not cover these here.
 
 ## More to Explore
 
 * StarPU
 * erlang-cl, pyopencl
-* arrayfire, clBLAS, 
+* [ArrayFire](http://arrayfire.com/why-arrayfire/)
+
 
 ###### Footnotes
 
-[^1]: For out-of-distro software or cutting-edge version I use [GNU Guix](https://guix.gnu.org/) which
-perfectly isolates these without being the kludge that containers are.
+[^1]: For out-of-distro software or cutting-edge version I use [GNU Guix](https://guix.gnu.org/) which perfectly isolates these without being the kludge that containers are.
 
