@@ -42,7 +42,7 @@ $ ubuntu-drivers list
 intel-microcode		# Driver for the CPU, not the GPU
 ```
 
-The DRM driver modules are `i915` and `radeon`; they participate in kernel mode switching:
+The DRM driver modules are `i915` and `radeon` which come with the kernel:
 
 ```bash
 $ lsmod | grep drm_kms_helper
@@ -60,14 +60,13 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 1:IGD:+:Pwr:0000:00:02.0
 2:DIS-Audio: :Off:0000:01:00.1
 ```
-(Note: `vga_switcheroo` is the legacy kludge for hybrid graphics systems.  It is being replaced by
-'muxless hybrid graphics' but its kernel interface is still there.)
+(Note: `vga_switcheroo` is the legacy kludge for hybrid graphics systems exposed by the `radeon` module.)
 
 
-## Sidestep: muxless graphics switching
+## Sidestep: graphics switching
 
 This section is about Open**GL** rather than OpenCL.  I include it to document how simple it has
-become to switch to the discrete GPU for rendering.  It can even be done for a single application,
+become to switch to the discrete GPU for rendering.  This can even be done for a single application,
 and all it requires is setting an environment variable.
 
 ```bash
@@ -91,13 +90,12 @@ GL_RENDERER   = Mesa DRI Intel(R) Haswell Mobile 	# Surprise: Intel renders
 ```
 
 When `DRI_PRIME` is 0 or unset, the Intel is selected.  Its rendering frequency is 60Hz,
-synchronised with the monitor refresh rate.  `DRI_PRIME=1` selects the discrete card.
+synchronised with the monitor refresh rate.  `DRI_PRIME=1` selects the AMD discrete card.
 `DRI_PRIME=2` (for some reason) selects the Intel, but without synchronised rendering.
 
 I was surprised to see the high frame rate on the IGD.  Even if it is 30% below the DIS,
 it is still considerable.  Just because it is an integrated GPU, doesn't mean that it can't
-be used for computing.  It will be interesting to see what frame rates can be achieved with
-the AMD proprietary (Catalyst) driver.  We'll get back to that.
+be used for computing.
 
 **Note:** According to 
 [this page](http://askubuntu.com/questions/593098/hybrid-graphic-card-drivers-amd-radeon-hd-8570-intel-hd-graphics-4000/620756#620756)
@@ -110,16 +108,16 @@ but I get the exact same results when I don't.  ([May be related to DRI3?](https
 Installing OpenCL involves three layers: 
 
 * the API library and implementation loader (ICD Loader)
-* one or more vendor-specific platform implementations (ICDs)
-* the DRM/DRI hardware device drivers required by the ICDs
+* one or more vendor-specific platform implementations (ICDs, installable client drivers)
+* any DRM/DRI hardware device drivers required by the ICDs
 
-Installing `clinfo` pulls in package `ocl-icd-libopencl1` which sets up the top layer of the
-OpenCL infrastructure:
+The top layer is provided by Ubuntu package `ocl-icd-libopencl1`.  It is convenient to install the
+`clinfo` utility which queries the API library about available platforms:
 
 ```bash
-$ sudo apt-get install clinfo
+$ sudo apt-get install clinfo ocl-icd-libopencl1
 $ clinfo
-Number of platforms   0
+Number of platforms   0   # We haven't installed ICDs yet
 ```
 
 Package `ocl-icd-libopencl1` provides `libOpenCL`, the library against which OpenCL applications
@@ -128,21 +126,21 @@ are linked.  It provides the ICD Loader, the machinery that dynamically loads IC
 
 An ICD is defined by a file with extension `.icd` in directory `/etc/OpenCL/vendors`.  The
 first line in the ICD file specifies the path to a shared library.  The ICD Loader `dlopen`s
-this library when that platform is requested.  Environment variables regulate the order of the
+this library when the platform is requested.  Environment variables regulate the order of the
 platforms, the default platform, and the debugging level.
 
 
 ## Installing ICDs
 
 Ubuntu provides ICDs for Intel and Nvidia GPUs.  AMD is supported via the Mesa ICP, which 
-implements OpenCL in terms of the free (non-proprietary) DRM/DRI drivers.
+implements OpenCL in terms of the free (non-proprietary) DRM/DRI drivers:
 
 ```bash
-$ apt-cache search '^opencl-icd$'
+$ apt-cache search '^opencl-icd$'  # virtual package provided by all ICDs
 beignet-opencl-icd - OpenCL library for Intel GPUs
-nvidia-opencl-icd-304 - NVIDIA OpenCL ICD
 mesa-opencl-icd - free implementation of the OpenCL API -- ICD runtime
-... more ...
+nvidia-opencl-icd-304 - NVIDIA OpenCL ICD
+... more nvidia versions ...
 
 $ apt-cache show beignet-opencl-icd
 ... supports the integrated GPUs of Ivy Bridge, Bay Trail, Haswell and Broadwell processors
@@ -150,8 +148,6 @@ $ apt-cache show beignet-opencl-icd
 $ apt-cache depends mesa-opencl-icd
 ... r600, amdgcn, amdgpu1, radeon1, nouveau2 ...
 ```
-
-Note that the `mesa-opencl-icd`, through the *nouveau* driver, offers Nvidia support as well.
 
 Install the Intel and Mesa ICDs to obtain the relevant platforms:
 
@@ -164,18 +160,16 @@ Platform 1: Clover
  `-- Device 0: AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
 ```
 
-Run `clinfo` without `-l` to get a detailed overview of the platforms and the features of each device.
-
-@@@ TODO @@@ table comparing the significant differences between my platforms (use `clinfo --raw`).
+We have two OpenCL devices ready to rock!  Run `clinfo` without `-l` to get a detailed
+overview of the platforms and the features of each device.
 
 
 ## Hitting the asphalt
 
-Andreas Klöckner's wiki has an [OpenCL HOWTO](https://wiki.tiker.net/OpenCLHowTo) with
-[demo and testing code](https://github.com/hpc12/tools), as well as 
+Andreas Klöckner's wiki has an [OpenCL HOWTO](https://wiki.tiker.net/OpenCLHowTo) and
 [lots more](https://wiki.tiker.net/WelcomePage) on OpenCL, CUDA, PyOpenCL, and the like.
 
-Test using his cl-demo:
+Let's test using his `cl-demo` application:
 
 ```bash
 $ git clone 'https://github.com/hpc12/tools' hpc12-tools
@@ -217,14 +211,14 @@ using the CPU during development, then switching to GPU at deployment time.
 Unfortunately there isn't currently in Ubuntu an OpenCL ICD for Intel CPUs.  Both AMD and Intel
 offer an OpenCL CPU driver, but the issue with their proprietary installers is that they often
 don't just unstall the ICD and its required libraries, but also replace clinfo, libOpenCL or other 
-libraries already provided by Ubuntu.  They may also e.g. change the system-wide `LD_LIBRARY_PATH` 
-(with the same effect).
+libraries already provided by Ubuntu.  This is why I avoid them.  Things however are improving.
 
 #### Intel's CPU driver
 
 Intel's "OpenCL™ Runtime for Intel® Core™ and Intel® Xeon® Processors" can be downloaded from their
 [OpenCL™ Drivers and Runtimes for Intel® Architecture](https://software.intel.com/en-us/articles/opencl-drivers) page.
-[This page](https://bitbucket.org/snippets/bkchr/EkeMg) describes a way to turn it into a .deb
+
+[Here](https://bitbucket.org/snippets/bkchr/EkeMg) is a way to turn the installer into a .deb
 (thus reducing the risk of overwriting files from other packages).  Also, note the comment at 
 the bottom of that page mentioning that `install.sh` or `install_GUI.sh` should just work now
 that Intel officially supports the driver on Ubuntu.  I haven't tested this.
@@ -233,39 +227,120 @@ that Intel officially supports the driver on Ubuntu.  I haven't tested this.
 
 AMD's CPU driver, which supports both AMD and Intel CPUs, comes 'for free' with their GPU driver.
 This used to be **fglrx** (Catalyst) but it has been dropped from Ubuntu.  If you want to install
-just the CPU driver there are two options:
+*just* the CPU driver there are two options:
 
 * Download the [Catalyst driver for Radeon](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst)
-and extract and install the CPU parts according to 
+and extract the CPU parts according to 
 [this hack](https://wiki.tiker.net/OpenCLHowTo#Installing_the_AMD_ICD_loader_and_CPU_ICD_.28from_the_driver_package--probably_unsupported.29)
 by Andreas Klöckner.
 
-* Download and unpack the [AMDGPU-Pro beta](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
-(see below under AMD's GPU drivers) and install just the debs for the ICD. @@@ TODO: check which these are @@@.
+* Simpler and more up to date, but in beta, is to download and unpack the 
+[AMDGPU-Pro](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
+beta drive (more on this below) and install *only* the ICD (`amdgpu-pro-opencl-icd_*.deb`):
+
+```bash
+$ wget 'https://www2.ati.com/drivers/linux/amdgpu-pro_16.30.3-315407.tar.xz'
+  # note: link was current on 2016-08-20, check the AMDGPU-Pro page for latest
+$ tar Jxvf amdgpu-pro_16.30.3-315407.tar.xz
+$ cd amdgpu-pro-driver
+$ sudo dpkg -i amdgpu-pro-opencl-icd_*_amd64.deb
+```
+
+This installs:
+
+```
+# The OpenCL ICD definition file for the AMD GPU platform
+/etc/OpenCL/vendors/amdocl64.icd
+
+# The libraries implementing the platform and its CPU and GPU devices. 
+# The GPU won't show up unless we install the DRM libraries, driver and firmware.
+/usr/lib/x86_64-linux-gnu/amdgpu-pro/libamdocl12cl64.so
+/usr/lib/x86_64-linux-gnu/amdgpu-pro/libamdocl64.so
+```
+
+We manually need to create one more file, to add the libraries to the `ld` path:
+
+```bash
+$ cat <<EOF | sudo sh -c 'cat > /etc/ld.so.conf.d/local-amdgpu.conf' && sudo ldconfig
+# Added manually; can be installed when package amdgpu-pro-opencl-icd is uninstalled
+/usr/lib/x86_64-linux-gnu/amdgpu-pro
+EOF
+```
+
+This conffile would have been installed by `amdgpu-pro-core` but we don't want to install
+that package because it also adds `/etc/modprobe.d/amdgpu-blacklist-radeon.conf` which
+does what its name says.  We don't want to blacklist the radeon module because we're not
+installing the GPU driver (which replaces radeon)!  
+
+And here we are:
+
+```bash
+$ clinfo -l
+Platform #0: Intel Gen OCL Driver
+ `-- Device #0: Intel(R) HD Graphics Haswell GT2 Mobile
+Platform #1: Clover
+ `-- Device #0: AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
+Platform #2: AMD Accelerated Parallel Processing
+ `-- Device #0: Intel(R) Core(TM) i7-4910MQ CPU @ 2.90GHz
+```
+
+All processing devices on my workstation made available using only Ubuntu packages
+(plus an otherwise harmless manual configuration change)!
 
 
-## Further yet: installing proprietary GPU support
+## Going further yet: installing proprietary GPU support
+
+From here on it's optimisation only.  We have a working OpenCL system which makes available
+both GPUs and the CPU. All software used is open source (AMDGPU will be part of Ubuntu once
+it leaves beta), but perhaps the proprietary drivers have more to offer?
 
 #### Intel's GPU driver
 
 Intel's "OpenCL™ 2.0 Driver+Runtime for Intel® HD, Iris™, and Iris™ Pro Graphics for Linux"
 is available from their 
 [OpenCL™ Drivers and Runtimes for Intel® Architecture](https://software.intel.com/en-us/articles/opencl-drivers)
-page.  I haven't tested this and stick with the open source (Beignet) driver.
+page.  I haven't tested this and stick with the open source driver.  (IIRC there 
+even was a shootout where Beignet performed better than the proprietary driver.)
 
-#### AMD's GPU drivers
+#### AMD's GPU driver
 
-Though the requirements for the
-[AMD APP SDK](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/)
-still list the [Catalyst driver](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst) 
-(aka fglrx, which was dropped from Debian after 14.04), it seems that Catalyst will
-be replaced by the fully supported AMDGPU-PRO driver, which is currently in beta.
+Though the 
+[AMD APP SDK page](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/)
+still lists the [Catalyst driver](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst) 
+(aka fglrx, which was dropped from Ubuntu after 14.04) as a requirement, it seems that AMDGPU-PRO will
+supercede it and be fully supported in Ubuntu once it leaves beta.
 
-Read more about it [here](http://www.pcworld.com/article/3075837/linux/amds-gaming-optimized-amdgpu-pro-driver-for-linux-is-in-beta.html),
-and on its [official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
+I read this [here](http://www.pcworld.com/article/3075837/linux/amds-gaming-optimized-amdgpu-pro-driver-for-linux-is-in-beta.html),
+and [on AMDGPU-PRO's official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
 which has installation instructions, compatibility lists, and the like.
 
-@@@ TODO: complete instructions. Note the conflict with clinfo and ocl-opencl-icd-dev. @@@
+The setup of the AMDGPU-PRO debian packages (downloadable from the 
+[official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx))
+is very promising: there is a main `amdgpu-pro` package which depends on `amdgpu-pro-computing` and
+`amdgpu-pro-graphics`, suggesting that the computing aspect be installed separate from the graphics.
+
+However AMD really need to put more thinking into the packaging before AMDGPU-PRO can leave beta.  The
+packages conflict (without declaring 'Conflicts') with packages in Ubuntu 16.04 and so fail to install.
+
+* `amdgpu-pro-computing` depends on `amdgpu-pro-clinfo`, which conflicts with `clinfo` as it replaces
+  the `clinfo` tool (by one that has much less functionality!).  Instead it should depend on 
+  `clinfo | amdgpu-pro-clinfo`.
+* `amdgpu-pro-clinfo` in turn depends on `amdgpu-pro-libopencl1`.  That library is superfluous as 
+  the libOpenCL library it contains is part of the the common OpenCL infrastructure.  Instead it should
+  depend on the Ubuntu-provided `ocl-icd-libopencl1`.
+* `amdgpu-pro-computing` depends on `amdgpu-pro-libopencl-dev`, which conflicts with `ocl-icd-opencl-dev`
+  as it replaces the `libOpenCL.so` symlink.  It shouldn't do this as that file is part of the common
+  OpenCL infrastructure.  AMD should change the dependency to 'ocl-icd-opencl-dev | amdgpu-pro-libopencl-dev',
+  or leave out the `amdgpu-pro-libopencl-dev` altogether (for reasons explained above).
+* Moreover, `amdgpu-pro-computing` shouldn't depend on the `-dev` library but rather on the *runtime*
+  library `ocl-icl-libopencl1`, as the `-dev` is only needed when *compiling* OpenCL applications.
+* `amdgpu-pro-opencl-icd` is missing the `/etc/ld.so.conf.d/amdgpu.conf` file.  This is provided by 
+  `amdgpu-pro-core`, but that package blacklists the `radeon` driver as described earlier. I would
+  suggest moving the `ld.so.conf.d/amdgpu.conf` to `amdgpu-pro-opencl-icd` so that the CPU can be used
+  standalone.
+
+I have installed the AMDGPU-PRO packages (except the conflicting ones), but it seems that the `amdgpu-pro`
+kernel module replacing `radeon` does not work on my system.  I will look deeper and publish my findings here.
 
 
 ## All the way: the Intel and AMD's SDKs
