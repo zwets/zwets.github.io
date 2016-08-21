@@ -17,7 +17,7 @@ Caffe's [master branch](https://github.com/BVLC/caffe) is bound to NVidia.
 Its [OpenCL branch](https://github.com/BVLC/caffe/tree/opencl) is in development and should support all
 vendors through the OpenCL standard.
 
-I prefer to keep my Ubuntu 16.04 plain vanilla, that is stick with packages available in the distro;
+I prefer to keep my Ubuntu 16.04 plain vanilla, that is stick with packages available in the distro.
 I avoid PPAs, `sudo make install` and certainly `sudo ./run-installer.sh`.[^1]  My worry was that
 installing OpenCL would involve a lot of the latter, but it turned out that `apt-get install` gets
 you a long way.
@@ -65,7 +65,7 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 
 ## Sidestep: graphics switching
 
-This section is about Open**GL** rather than OpenCL.  I include it to document how simple it has
+This section is about Open*GL* rather than OpenCL.  I include it to document how simple it has
 become to switch to the discrete GPU for rendering.  This can even be done for a single application,
 and all it requires is setting an environment variable.
 
@@ -111,8 +111,13 @@ Installing OpenCL involves three layers:
 * one or more vendor-specific platform implementations (ICDs, installable client drivers)
 * any DRM/DRI hardware device drivers required by the ICDs
 
-The top layer is provided by Ubuntu package `ocl-icd-libopencl1`.  It is convenient to install the
-`clinfo` utility which queries the API library about available platforms:
+The top layer is provided by Ubuntu package `ocl-icd-libopencl1`.  This package contains 
+`libOpenCL`, the API library against which OpenCL applications are linked.  It also provides
+the ICD Loader, the machinery that dynamically loads ICDs, installable client drivers
+implementing the vendor-specific interaction with the hardware.
+
+It is convenient to also install the `clinfo` utility which queries the API library about
+available platforms:
 
 ```bash
 $ sudo apt-get install clinfo ocl-icd-libopencl1
@@ -120,14 +125,10 @@ $ clinfo
 Number of platforms   0   # We haven't installed ICDs yet
 ```
 
-Package `ocl-icd-libopencl1` provides `libOpenCL`, the library against which OpenCL applications
-are linked.  It provides the ICD Loader, the machinery that dynamically loads ICDs.  The ICDs
-(installable client drivers) implement the vendor-specific interaction with the hardware.
-
-An ICD is defined by a file with extension `.icd` in directory `/etc/OpenCL/vendors`.  The
+Each ICD is defined by a file with extension `.icd` in directory `/etc/OpenCL/vendors`.  The
 first line in the ICD file specifies the path to a shared library.  The ICD Loader `dlopen`s
 this library when the platform is requested.  Environment variables regulate the order of the
-platforms, the default platform, and the debugging level.
+platforms, the default platform, and the debugging level.  See `man libOpenCL` for details.
 
 
 ## Installing ICDs
@@ -160,16 +161,15 @@ Platform 1: Clover
  `-- Device 0: AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
 ```
 
-We have two OpenCL devices ready to rock!  Run `clinfo` without `-l` to get a detailed
-overview of the platforms and the features of each device.
+We have two OpenCL devices (supposedly) ready to rock!  Run `clinfo` without `-l` to get a
+detailed overview of the platforms and the features of each device.
 
 
 ## Hitting the asphalt
 
 Andreas Klöckner's wiki has an [OpenCL HOWTO](https://wiki.tiker.net/OpenCLHowTo) and
 [lots more](https://wiki.tiker.net/WelcomePage) on OpenCL, CUDA, PyOpenCL, and the like.
-
-Let's test using his `cl-demo` application:
+His `cl-demo` application is perfect for a smoke test:
 
 ```bash
 $ git clone 'https://github.com/hpc12/tools' hpc12-tools
@@ -199,19 +199,17 @@ $ ./cl-demo 1000000 10
 GOOD
 ```
 
-Good!  We have a working OpenCL system supporting both graphics cards, using only `apt-get install`
-and no out-of-distro repositories.
-
-The "nice to have" that's missing (given my requirements) is **CPU** support.  Caffe recommends
-using the CPU during development, then switching to GPU at deployment time.
+Good!  We have a working OpenCL system supporting both graphics cards, and needed only `apt-get install`
+with no out-of-distro repositories.  The "nice to have" that's missing (given my requirements) is
+**CPU** support.  (Caffe recommends using the CPU during development, then switching to GPU at deployment time.)
 
 
 ## Going beyond: installing CPU support
 
-Unfortunately there isn't currently in Ubuntu an OpenCL ICD for Intel CPUs.  Both AMD and Intel
-offer an OpenCL CPU driver, but the issue with their proprietary installers is that they often
-don't just unstall the ICD and its required libraries, but also replace clinfo, libOpenCL or other 
-libraries already provided by Ubuntu.  This is why I avoid them.  Things however are improving.
+Unfortunately there isn't currently in Ubuntu an OpenCL ICD for Intel CPUs.  One used to come with the
+fglrx driver but that package was dropped from Ubuntu (more on this below).  Both AMD and Intel offer an
+OpenCL CPU driver, but it comes in proprietary installers which tend to bypass dpkg/APT.  Things however
+are improving.
 
 #### Intel's CPU driver
 
@@ -285,14 +283,15 @@ Platform 2: AMD Accelerated Parallel Processing
 ```
 
 All processing devices on my workstation made available using only Ubuntu packages
-(plus an otherwise harmless manual configuration change)!
+(plus a mostly harmless manual configuration change)!
 
 
-## Going further yet: installing proprietary GPU support
+## Installing proprietary GPU support
 
 From here on it's optimisation only.  We have a working OpenCL system which makes available
 both GPUs and the CPU. All software used is open source (AMDGPU will be part of Ubuntu once
-it leaves beta), but perhaps the proprietary drivers have more to offer?
+it leaves beta). Inquisitive minds may wonder if the proprietary drivers have more to offer,
+certainly for the AMD GPU which currently operates via the generic Mesa layer.
 
 #### Intel's GPU driver
 
@@ -308,21 +307,23 @@ Though the
 [AMD APP SDK page](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/)
 still lists the [Catalyst driver](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst) 
 (aka fglrx, which was dropped from Ubuntu after 14.04) as a requirement, it seems that AMDGPU-PRO will
-supercede it and be fully supported in Ubuntu once it leaves beta.
-
-I read this [here](http://www.pcworld.com/article/3075837/linux/amds-gaming-optimized-amdgpu-pro-driver-for-linux-is-in-beta.html),
+supercede it and be fully supported in Ubuntu once it leaves beta.  I read this 
+[here](http://www.pcworld.com/article/3075837/linux/amds-gaming-optimized-amdgpu-pro-driver-for-linux-is-in-beta.html),
 and [on AMDGPU-PRO's official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
 which has installation instructions, compatibility lists, and the like.
 
 The setup of the AMDGPU-PRO debian packages (downloadable from the 
 [official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx))
 is very promising: there is a main `amdgpu-pro` package which depends on `amdgpu-pro-computing` and
-`amdgpu-pro-graphics`, suggesting that the computing aspect be installed separate from the graphics.
+`amdgpu-pro-graphics`, suggesting that the computing aspect can be installed separate from the graphics.
 
 However AMD really need to put more thinking into the packaging before AMDGPU-PRO can leave beta.  The
-packages conflict (without declaring 'Conflicts') with packages in Ubuntu 16.04 and so fail to install.
+packages conflict (without declaring 'Conflicts') with packages in Ubuntu 16.04 and so fail to install
+using the provided `amdgpu-pro-install` script.
 
 #### AMDGPU-PRO Beta packaging problems
+
+Here are the problems I ran into when attempting to install the beta:
 
 * `amdgpu-pro-computing` depends on `amdgpu-pro-clinfo`, which conflicts with `clinfo` as it replaces
   the `clinfo` tool (by one that has much less functionality!).  Instead it should depend on 
@@ -341,18 +342,21 @@ packages conflict (without declaring 'Conflicts') with packages in Ubuntu 16.04 
   suggest moving the `ld.so.conf.d/amdgpu.conf` to `amdgpu-pro-opencl-icd` so that the CPU can be used
   standalone.
 
-I have installed the AMDGPU-PRO packages (except the conflicting ones), but it seems that the `amdgpu-pro`
-kernel module replacing `radeon` does not work on my system.  I will look deeper and publish my findings here.
+Working around these isues I could install all AMDGPU-PRO packages except the two conflicting ones
+(which are superfluous anyway), but it seems that the `amdgpu-pro` kernel module which replaces `radeon`
+does not work on my system.  I'll need to look deeper though to be sure.  (AMD: if you're reading this,
+I'm happy to work with you to sort this out.)
 
 
-## All the way: the Intel and AMD's SDKs
+## Going all the way: the Intel and AMD's SDKs
 
 AMD distributes the 
 [AMD Accelerated Parallel Processing (APP) SDK](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/),
 and Intel has its
 [Intel SDK for OpenCL Applications](https://software.intel.com/en-us/articles/opencl-drivers).
 
-I will not cover these here.
+I will not cover these here but I do note that the AMD SDK appears to be installable non-root, which is
+great!  Maybe more on this in the future.
 
 ## More to Explore
 
