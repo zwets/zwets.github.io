@@ -268,7 +268,7 @@ EOF
 This would have been done by `amdgpu-pro-core` but we don't want to install
 that package because it also adds `/etc/modprobe.d/amdgpu-blacklist-radeon.conf` which
 does what its name says.  We don't want to blacklist the radeon module because we're not
-installing the GPU driver!
+installing the GPU driver.
 
 And here we are:
 
@@ -283,7 +283,7 @@ Platform 2: AMD Accelerated Parallel Processing
 ```
 
 All processing devices on my workstation made available using only Ubuntu packages
-(plus a mostly harmless manual configuration change)!
+(plus a mostly harmless manual configuration change).
 
 
 ## Installing proprietary GPU support
@@ -326,14 +326,14 @@ using the provided `amdgpu-pro-install` script.
 Here are the problems I ran into when attempting to install the beta:
 
 * `amdgpu-pro-computing` depends on `amdgpu-pro-clinfo`, which conflicts with `clinfo` as it replaces
-  the `clinfo` tool (by one that has much less functionality!).  Instead it should depend on 
+  the `clinfo` tool (by one that has much less functionality).  Instead it should depend on 
   `clinfo | amdgpu-pro-clinfo`.
 * `amdgpu-pro-clinfo` in turn depends on `amdgpu-pro-libopencl1`.  That library is superfluous as 
   the libOpenCL library it contains is part of the the common OpenCL infrastructure.  Instead it should
   depend on the Ubuntu-provided `ocl-icd-libopencl1`.
 * `amdgpu-pro-computing` depends on `amdgpu-pro-libopencl-dev`, which conflicts with `ocl-icd-opencl-dev`
   as it replaces the `libOpenCL.so` symlink.  It shouldn't do this as that file is part of the common
-  OpenCL infrastructure.  AMD should change the dependency to 'ocl-icd-opencl-dev | amdgpu-pro-libopencl-dev',
+  OpenCL infrastructure.  AMD should change the dependency to `ocl-icd-opencl-dev | amdgpu-pro-libopencl-dev`,
   or leave out the `amdgpu-pro-libopencl-dev` altogether (for reasons explained above).
 * Moreover, `amdgpu-pro-computing` shouldn't depend on the `-dev` library but rather on the *runtime*
   library `ocl-icl-libopencl1`, as the `-dev` is only needed when *compiling* OpenCL applications.
@@ -367,5 +367,5 @@ great!  Maybe more on this in the future.
 
 ###### Footnotes
 
-[^1]: For out-of-distro software or cutting-edge version I use [GNU Guix](https://guix.gnu.org/) which perfectly isolates these without being the kludge that containers are.
+[^1]: For out-of-distro software or cutting-edge versions I use [GNU Guix](https://guix.gnu.org/) which perfectly isolates these without being the kludge that containers are.
 
