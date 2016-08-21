@@ -236,7 +236,7 @@ by Andreas Klöckner.
 
 * Simpler and more up to date, but in beta, is to download and unpack the 
 [AMDGPU-Pro](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
-beta drive (more on this below) and install *only* the ICD (`amdgpu-pro-opencl-icd_*.deb`):
+driver (more on this below) and install *only* the ICD (`amdgpu-pro-opencl-icd_*.deb`):
 
 ```bash
 $ wget 'https://www2.ati.com/drivers/linux/amdgpu-pro_16.30.3-315407.tar.xz'
@@ -267,21 +267,21 @@ $ cat <<EOF | sudo sh -c 'cat > /etc/ld.so.conf.d/local-amdgpu.conf' && sudo ldc
 EOF
 ```
 
-This conffile would have been installed by `amdgpu-pro-core` but we don't want to install
+This would have been done by `amdgpu-pro-core` but we don't want to install
 that package because it also adds `/etc/modprobe.d/amdgpu-blacklist-radeon.conf` which
 does what its name says.  We don't want to blacklist the radeon module because we're not
-installing the GPU driver (which replaces radeon)!  
+installing the GPU driver!
 
 And here we are:
 
 ```bash
 $ clinfo -l
-Platform #0: Intel Gen OCL Driver
- `-- Device #0: Intel(R) HD Graphics Haswell GT2 Mobile
-Platform #1: Clover
- `-- Device #0: AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
-Platform #2: AMD Accelerated Parallel Processing
- `-- Device #0: Intel(R) Core(TM) i7-4910MQ CPU @ 2.90GHz
+Platform 0: Intel Gen OCL Driver
+ `-- Device 0: Intel(R) HD Graphics Haswell GT2 Mobile
+Platform 1: Clover
+ `-- Device 0: AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
+Platform 2: AMD Accelerated Parallel Processing
+ `-- Device 0: Intel(R) Core(TM) i7-4910MQ CPU @ 2.90GHz
 ```
 
 All processing devices on my workstation made available using only Ubuntu packages
@@ -321,6 +321,8 @@ is very promising: there is a main `amdgpu-pro` package which depends on `amdgpu
 
 However AMD really need to put more thinking into the packaging before AMDGPU-PRO can leave beta.  The
 packages conflict (without declaring 'Conflicts') with packages in Ubuntu 16.04 and so fail to install.
+
+#### AMDGPU-PRO Beta packaging problems
 
 * `amdgpu-pro-computing` depends on `amdgpu-pro-clinfo`, which conflicts with `clinfo` as it replaces
   the `clinfo` tool (by one that has much less functionality!).  Instead it should depend on 
