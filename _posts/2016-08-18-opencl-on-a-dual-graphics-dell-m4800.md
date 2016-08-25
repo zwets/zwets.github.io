@@ -227,7 +227,7 @@ AMD's CPU driver, which supports both AMD and Intel CPUs, comes 'for free' with 
 This used to be **fglrx** (Catalyst) but it has been dropped from Ubuntu.  If you want to install
 *just* the CPU driver there are two options:
 
-* Download the [Catalyst driver for Radeon](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst)
+* Download the [Catalyst (fglrx) driver for Radeon](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst)
 and extract the CPU parts according to 
 [this hack](https://wiki.tiker.net/OpenCLHowTo#Installing_the_AMD_ICD_loader_and_CPU_ICD_.28from_the_driver_package--probably_unsupported.29)
 by Andreas Klöckner.
@@ -265,10 +265,10 @@ $ cat <<EOF | sudo sh -c 'cat > /etc/ld.so.conf.d/local-amdgpu.conf' && sudo ldc
 EOF
 ```
 
-This would have been done by `amdgpu-pro-core` but we don't want to install
-that package because it also adds `/etc/modprobe.d/amdgpu-blacklist-radeon.conf` which
-does what its name says.  We don't want to blacklist the radeon module because we're not
-installing the GPU driver.
+This would have been done by `amdgpu-pro-core` but we don't want to install that
+package because it also adds `/etc/modprobe.d/amdgpu-blacklist-radeon.conf` which
+does what its name says, and we don't want to blacklist the radeon module as we're
+not installing the GPU driver.
 
 And here we are:
 
@@ -282,16 +282,17 @@ Platform 2: AMD Accelerated Parallel Processing
  `-- Device 0: Intel(R) Core(TM) i7-4910MQ CPU @ 2.90GHz
 ```
 
-All processing devices on my workstation made available using only Ubuntu packages
-(plus a mostly harmless manual configuration change).
+All processing devices on my workstation made available using only debs (plus a mostly
+harmless manual configuration change).
 
 
 ## Installing proprietary GPU support
 
 From here on it's optimisation only.  We have a working OpenCL system which makes available
-both GPUs and the CPU. All software used is open source (AMDGPU will be part of Ubuntu once
+both GPUs and the CPU. All software used is open source (AMDGPU-PRO will be part of Ubuntu once
 it leaves beta). Inquisitive minds may wonder if the proprietary drivers have more to offer,
-certainly for the AMD GPU which currently operates via the generic Mesa layer.
+certainly for the AMD GPU which currently operates via the generic Mesa layer, but perhaps
+also the Intel ICD's for CPU and GPU.
 
 #### Intel's GPU driver
 
@@ -301,16 +302,23 @@ is available from their
 page.  I haven't tested this and stick with the open source driver.  (IIRC there 
 even was a shootout where Beignet performed better than the proprietary driver.)
 
-#### AMD's GPU driver
+#### AMD's GPU drivers
 
 Though the 
 [AMD APP SDK page](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/)
 still lists the [Catalyst driver](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst) 
 (aka fglrx, which was dropped from Ubuntu after 14.04) as a requirement, it seems that AMDGPU-PRO will
-supercede it and be fully supported in Ubuntu once it leaves beta.  I read this 
+supercede it and be fully supported in Ubuntu once it leaves beta.  More on this
 [here](http://www.pcworld.com/article/3075837/linux/amds-gaming-optimized-amdgpu-pro-driver-for-linux-is-in-beta.html),
 and [on AMDGPU-PRO's official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
 which has installation instructions, compatibility lists, and the like.
+
+##### Catalyst / fglrx driver
+
+I attempted to build and install the latest Catalyst (fglrx) driver from the binary package.  The compile
+failed on the dkms-module, which is when I decided to try the AMDGPU-PRO driver.
+
+##### AMDGPU-PRO driver
 
 The setup of the AMDGPU-PRO debian packages (downloadable from the 
 [official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx))
@@ -321,31 +329,39 @@ However AMD really need to put more thinking into the packaging before AMDGPU-PR
 packages conflict (without declaring 'Conflicts') with packages in Ubuntu 16.04 and so fail to install
 using the provided `amdgpu-pro-install` script.
 
-#### AMDGPU-PRO Beta packaging problems
+##### AMDGPU-PRO Beta packaging problems
 
 Here are the problems I ran into when attempting to install the beta:
 
-* `amdgpu-pro-computing` depends on `amdgpu-pro-clinfo`, which conflicts with `clinfo` as it replaces
-  the `clinfo` tool (by one that has much less functionality).  Instead it should depend on 
-  `clinfo | amdgpu-pro-clinfo`.
-* `amdgpu-pro-clinfo` in turn depends on `amdgpu-pro-libopencl1`.  That library is superfluous as 
-  the libOpenCL library it contains is part of the the common OpenCL infrastructure.  Instead it should
-  depend on the Ubuntu-provided `ocl-icd-libopencl1`.
+* `amdgpu-pro-computing` depends on `amdgpu-pro-clinfo`, which conflicts with `clinfo` as it replaces the
+clinfo tool (by one that has much less functionality).
+**Solution:** 
+  * `amdgpu-pro-computing` should `Depends: clinfo | amdgpu-pro-clinfo` (or better: *Recommends*, unless
+  the clinfo utility is indispensable for its proper functioning).  
+  * `amdgpu-pro-clinfo` must `Conflicts: clinfo`.
+* `amdgpu-pro-clinfo` in turn depends on `amdgpu-pro-libopencl1`, which conflicts with `ocl-icd-libopencl1`
+as it replaces the libOpenCL library.
+**Solution:** 
+  * `amdgpu-pro-clinfo` should `Depends: ocl-icd-libopencl1 | amdgpu-pro-libopencl1`.  In fact, is package
+  `amdgpu-pro-libopencl1` needed at all?  Library libOpenCL is part of the common OpenCL infrastructure
+  (the top layer [described above](#installing-opencl)) and needn't be touched by vendor ICDs.
+  * `amdgpu-pro-libopencl1` must `Conflicts: ocl-icd-libopencl1`
 * `amdgpu-pro-computing` depends on `amdgpu-pro-libopencl-dev`, which conflicts with `ocl-icd-opencl-dev`
-  as it replaces the `libOpenCL.so` symlink.  It shouldn't do this as that file is part of the common
-  OpenCL infrastructure.  AMD should change the dependency to `ocl-icd-opencl-dev | amdgpu-pro-libopencl-dev`,
-  or leave out the `amdgpu-pro-libopencl-dev` altogether (for reasons explained above).
-* Moreover, `amdgpu-pro-computing` shouldn't depend on the `-dev` library but rather on the *runtime*
-  library `ocl-icl-libopencl1`, as the `-dev` is only needed when *compiling* OpenCL applications.
-* `amdgpu-pro-opencl-icd` is missing the `/etc/ld.so.conf.d/amdgpu.conf` file.  This is provided by 
-  `amdgpu-pro-core`, but that package blacklists the `radeon` driver as described earlier. I would
-  suggest moving the `ld.so.conf.d/amdgpu.conf` to `amdgpu-pro-opencl-icd` so that the CPU can be used
-  standalone.
+as it replaces the `libOpenCL.so` symlink.  Again, it shouldn't do this as that file is part of the common
+OpenCL infrastructure.
+**Solution:**
+  * `amdgpu-pro-computing` should `Depends: ocl-icd-opencl-dev | amdgpu-pro-libopencl-dev`,
+  or leave out the `amdgpu-pro-libopencl-dev` altogether (for same reasons as explained above).
+  * Moreover, `amdgpu-pro-computing` probably shouldn't depend on the `-dev` library but rather on the
+  *runtime* library `ocl-icl-libopencl1`, as the `-dev` is a *build* dependency.
+* `amdgpu-pro-opencl-icd` is missing the `/etc/ld.so.conf.d/amdgpu.conf` file.  This file is provided by 
+`amdgpu-pro-core`, but that package blacklists the `radeon` driver as described earlier, and thus should be
+in one of the depends of the `amdgpu-pro-graphics` package. I would suggest moving the
+`ld.so.conf.d/amdgpu.conf` to `amdgpu-pro-opencl-icd` so that the CPU can be used standalone.
 
-Working around these isues I could install all AMDGPU-PRO packages except the two conflicting ones
-(which are superfluous anyway), but it seems that the `amdgpu-pro` kernel module which replaces `radeon`
-does not work on my system.  I'll need to look deeper though to be sure.  (AMD: if you're reading this,
-I'm happy to work with you to sort this out.)
+Working around these isues I could install all AMDGPU-PRO packages except the two conflicting ones, but it
+seems that the `amdgpu-pro` kernel module which replaces `radeon` does not work on my system.  I'll need to
+look deeper though to be sure.  (AMD: if you're reading this, I'm happy to work with you to sort this out.)
 
 
 ## Going all the way: the Intel and AMD's SDKs
