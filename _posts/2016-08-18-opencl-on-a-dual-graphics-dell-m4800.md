@@ -3,7 +3,7 @@ title: OpenCL on a dual graphics Dell M4800
 layout: post
 excerpt: "Documenting how I got OpenCL working on Ubuntu 16.04 on my dual graphics Dell M4800 workstation."
 published: true
-updated: 2016-08-25
+updated: 2016-09-05
 ---
 
 
@@ -329,8 +329,8 @@ AMD distributes the
 and Intel has its
 [Intel SDK for OpenCL Applications](https://software.intel.com/en-us/articles/opencl-drivers).
 
-I will not cover these here but I do note that the AMD SDK appears to be installable non-root, which is
-great!  Maybe more on this in the future.
+I'm not using these but I note that the AMD SDK appears to be installable non-root, which is
+great.  Maybe more on this in the future.
 
 ## More to Explore
 
