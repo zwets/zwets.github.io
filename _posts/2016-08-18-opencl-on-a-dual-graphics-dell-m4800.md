@@ -261,7 +261,7 @@ We manually need to create one more file, to add the libraries to the `ld` path:
 
 ```bash
 $ cat <<EOF | sudo sh -c 'cat > /etc/ld.so.conf.d/local-amdgpu.conf' && sudo ldconfig
-# Added manually; can be installed when package amdgpu-pro-opencl-icd is uninstalled
+# Added manually; can be removed when package amdgpu-pro-opencl-icd is uninstalled
 /usr/lib/x86_64-linux-gnu/amdgpu-pro
 EOF
 ```
@@ -314,9 +314,12 @@ supercede it and be fully supported in Ubuntu once it leaves beta.  More on this
 and [on AMDGPU-PRO's official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
 which has installation instructions, compatibility lists, and the like.
 
+For documentation purposes including here my installation notes on fglrx and AMDGPU-Pro.  tl;dr: I'm 
+currently using neither as fglrx failed to install and AMDGPU-Pro did not work.
+
 ##### Catalyst / fglrx driver
 
-I attempted to build and install the latest Catalyst (fglrx) driver from the binary package.  The compile
+Attempted to build and install the latest Catalyst (fglrx) driver from the binary package.  The compile
 failed on the dkms-module, which is when I decided to try the AMDGPU-PRO driver.
 
 ##### AMDGPU-PRO driver
