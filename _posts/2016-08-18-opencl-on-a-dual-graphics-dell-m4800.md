@@ -165,6 +165,9 @@ Platform 1: Clover
 We have two OpenCL devices (supposedly) ready to rock!  Run `clinfo` without `-l` to get a
 detailed overview of the platforms and the features of each device.
 
+To make an OpenCL device the default, use `OCL_ICD_VENDORS=mesa` (or any name in `/etc/OpenCL/vendors`),
+see `man libOpenCL`.
+
 
 ## Hitting the asphalt
 
@@ -314,15 +317,37 @@ supercede it and be fully supported in Ubuntu once it leaves beta.  More on this
 and [on AMDGPU-PRO's official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
 which has installation instructions, compatibility lists, and the like.
 
-For documentation purposes including here my installation notes on fglrx and AMDGPU-Pro.  tl;dr: I'm 
-currently using neither as fglrx failed to install and AMDGPU-Pro did not work.
+For documentation purposes I have copied my installation notes for `fglrx` and `AMDGPU-Pro` below
+in [Appendix I](#appendix-i).  I'm currently using neither as `fglrx` failed to install and `AMDGPU-Pro`
+didn't work.  Maybe with some more tweaking it would, but I have the Mesa driver which suffices for now.
 
-##### Catalyst / fglrx driver
+
+## Going all the way: the Intel and AMD's SDKs
+
+AMD distributes the 
+[AMD Accelerated Parallel Processing (APP) SDK](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/),
+and Intel has its
+[Intel SDK for OpenCL Applications](https://software.intel.com/en-us/articles/opencl-drivers).
+
+I will not cover these here but I do note that the AMD SDK appears to be installable non-root, which is
+great!  Maybe more on this in the future.
+
+## More to Explore
+
+* StarPU
+* erlang-cl, pyopencl
+* [ArrayFire](http://arrayfire.com/why-arrayfire/)
+
+---
+
+## Appendix I: Install log AMD GPU Drivers
+
+#### Catalyst / fglrx driver
 
 Attempted to build and install the latest Catalyst (fglrx) driver from the binary package.  The compile
 failed on the dkms-module, which is when I decided to try the AMDGPU-PRO driver.
 
-##### AMDGPU-PRO driver
+#### AMDGPU-PRO driver
 
 The setup of the AMDGPU-PRO debian packages (downloadable from the 
 [official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx))
@@ -333,7 +358,7 @@ However AMD really need to put more thinking into the packaging before AMDGPU-PR
 packages conflict (without declaring 'Conflicts') with packages in Ubuntu 16.04 and so fail to install
 using the provided `amdgpu-pro-install` script.
 
-##### AMDGPU-PRO Beta packaging problems
+#### AMDGPU-PRO Beta packaging problems
 
 Here are the problems I ran into when attempting to install the beta:
 
@@ -366,23 +391,6 @@ in one of the depends of the `amdgpu-pro-graphics` package. I would suggest movi
 Working around these isues I could install all AMDGPU-PRO packages except the two conflicting ones, but it
 seems that the `amdgpu-pro` kernel module which replaces `radeon` does not work on my system.  I'll need to
 look deeper though to be sure.  (AMD: if you're reading this, I'm happy to work with you to sort this out.)
-
-
-## Going all the way: the Intel and AMD's SDKs
-
-AMD distributes the 
-[AMD Accelerated Parallel Processing (APP) SDK](http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/),
-and Intel has its
-[Intel SDK for OpenCL Applications](https://software.intel.com/en-us/articles/opencl-drivers).
-
-I will not cover these here but I do note that the AMD SDK appears to be installable non-root, which is
-great!  Maybe more on this in the future.
-
-## More to Explore
-
-* StarPU
-* erlang-cl, pyopencl
-* [ArrayFire](http://arrayfire.com/why-arrayfire/)
 
 
 ###### Footnotes
