@@ -234,7 +234,7 @@ This used to be **fglrx** (Catalyst) but it has been dropped from Ubuntu.  If yo
 * Download the [Catalyst (fglrx) driver for Radeon](http://www.amd.com/en-us/innovations/software-technologies/technologies-gaming/catalyst)
 and extract the CPU parts according to 
 [this hack](https://wiki.tiker.net/OpenCLHowTo#Installing_the_AMD_ICD_loader_and_CPU_ICD_.28from_the_driver_package--probably_unsupported.29)
-by Andreas Klöckner.
+by Andreas Klöckner.  Or see below under [AMD's GPU Drivers](#amd-s-gpu-drivers).
 
 * Simpler and more up to date, but in beta, is to download and unpack the 
 [AMDGPU-Pro](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
@@ -344,8 +344,22 @@ great.  Maybe more on this in the future.
 
 #### Catalyst / fglrx driver
 
-Attempted to build and install the latest Catalyst (fglrx) driver from the binary package.  The compile
-failed on the dkms-module, which is when I decided to try the AMDGPU-PRO driver.
+Attempted to build and install the latest Catalyst (fglrx) driver from the binary package.
+The compile failed on the dkms-module, which is when I decided to try the AMDGPU-PRO driver.
+
+Later I noticed that the [Installer Notes online](http://www2.ati.com/relnotes/amd-catalyst-graphics-driver-installer-notes-for-linux-operating-systems.pdf)
+(but not those inside the downloaded package ...) dedicate section 5 to "headless install".  The
+generation of the `deb` worked:
+
+    $ # Omitting the installation of build-dependencies 
+    $ sudo ./amd-driver-installer-15.302-x86.x86_64.run --buildpkg Ubuntu/xenial --NoXServer
+
+But one look at `dpkg-deb --contents fglrx-core_15.302-0ubuntu1_amd64.deb` shows that it has the same
+issues as AMDGPU-PRO (see below): conflicting `clinfo` and `libOpenCL.so`, and other issues.
+
+*Update* it turns out that my M4800 has a FirePro Workstation M5100 card.  This has a different driver
+<https://www2.ati.com/drivers/firepro/15.302.2301-linux-retail_end_user.zip>.  I will report back
+when that sorts the problems.
 
 #### AMDGPU-PRO driver
 
