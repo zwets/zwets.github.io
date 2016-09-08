@@ -331,7 +331,6 @@ supported).  Also, the AMD SDK (see below) still lists `fglrx` as a requirement.
 
 As my GPU isn't supported by AMDGPU-PRO, I tested installation of the Catalyst driver.
 The FirePro M5100 in my Dell M4800 requires the Catalyst **Pro** (workstation) driver.
-
 This driver, as well as the regular Catalyst driver, can be 
 [built "headless"](http://support.amd.com/en-us/kb-articles/Pages/XServerLessDriver.aspx),
 meaning that you can build and install just the OpenCL part:
@@ -339,9 +338,8 @@ meaning that you can build and install just the OpenCL part:
 ```bash
 $ # Omitting the installation of build-dependencies (devscripts, dh-modaliases, ...)
 $ unzip 15.302.2301-linux-retail_end_user.zip
-$ sudo su   # don't like this but it seems required
-# cd fglrx-15.302.2301
-# ./amd-driver-installer-15.302.2301-x86.x86_64.run --buildpkg Ubuntu/xenial --NoXServer
+$ cd fglrx-15.302.2301
+$ sudo ./amd-driver-installer-15.302.2301-x86.x86_64.run --buildpkg Ubuntu/xenial --NoXServer
 ```
 
 This builds `fglrx-core_15.302-0ubuntu1_amd64.deb`, but unfortunately this package has the
