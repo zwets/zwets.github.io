@@ -320,9 +320,8 @@ and
 [on AMDGPU-PRO's official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
 which has installation instructions, compatibility lists, and the like.
 
-Installing the beta packages was a struggle.  AMDGPU-PRO may be beta, its Debian/Ubuntu
-packaging has yet to leave alpha.  My notes are in
-[Appendix I](#appendix-i-amdgpu-pro-install-notes) below.
+Installing the beta packages needed some care.  AMDGPU-PRO's Debian/Ubuntu packaging still
+needs some work.  My notes are in [Appendix I](#appendix-i-amdgpu-pro-install-notes) below.
 
 Note that AMDGPU-PRO supports OpenCL 1.2, not 2.0 (which oddly its predecessor `fglrx` already
 did).  The AMD SDK (see below) still lists Catalyst, not AMDGPU-PRO, as a requirement.
@@ -393,41 +392,33 @@ installation, leaving you with a stuck APT.
 
 These things need fixing in the AMDGPU-PRO (Beta) Debian packages[^2]:
 
-* `amdgpu-pro-computing` depends on `amdgpu-pro-clinfo`, which conflicts with `clinfo` as it replaces the
-clinfo tool (by one that has lots less functionality).
+1. `amdgpu-pro-computing` depends on `amdgpu-pro-clinfo`, which conflicts with `clinfo` as it replaces the
+clinfo tool (by one that has lots less functionality).  **Solution:** 
 
-**Solution:** 
+    * `amdgpu-pro-computing` should `Depends: clinfo | amdgpu-pro-clinfo` (or better: *Recommends*, unless
+    the `clinfo` utility is indispensable for the proper functioning of the package).  
+    * `amdgpu-pro-clinfo` must `Conflicts: clinfo`.
 
-  * `amdgpu-pro-computing` should `Depends: clinfo | amdgpu-pro-clinfo` (or better: *Recommends*, unless
-  the `clinfo` utility is indispensable for the proper functioning of the package).  
-  * `amdgpu-pro-clinfo` must `Conflicts: clinfo`.
-
-* `amdgpu-pro-clinfo` depends on `amdgpu-pro-libopencl1`, which conflicts with `ocl-icd-libopencl1`
-as it replaces the libOpenCL library.
-
-**Solution:** 
+2. `amdgpu-pro-clinfo` depends on `amdgpu-pro-libopencl1`, which conflicts with `ocl-icd-libopencl1`
+as it replaces the libOpenCL library.  **Solution:** 
 
   * `amdgpu-pro-clinfo` should `Depends: ocl-icd-libopencl1 | amdgpu-pro-libopencl1`.  In fact, is
   `amdgpu-pro-libopencl1` needed at all?  The libOpenCL library is part of the common OpenCL infrastructure
   (the top layer [described above](#installing-opencl)) and needn't be provided by vendor ICDs.
   * `amdgpu-pro-libopencl1` must `Conflicts: ocl-icd-libopencl1`
 
-* `amdgpu-pro-computing` depends on `amdgpu-pro-libopencl-dev`, which conflicts with `ocl-icd-opencl-dev`
+3. `amdgpu-pro-computing` depends on `amdgpu-pro-libopencl-dev`, which conflicts with `ocl-icd-opencl-dev`
 as it replaces the `libOpenCL.so` symlink.  It shouldn't do this as that symlink file is part of the common
-OpenCL infrastructure. 
-
-**Solution:**
+OpenCL infrastructure.  **Solution:**
 
   * `amdgpu-pro-computing` should `Depends: ocl-icd-opencl-dev | amdgpu-pro-libopencl-dev`,
   or leave out the `amdgpu-pro-libopencl-dev` altogether (for same reasons as explained above).
   * Moreover, `amdgpu-pro-computing` probably shouldn't depend on the `-dev` library but rather on the
   *runtime* library `ocl-icl-libopencl1`, as the `-dev` package is a *build* dependency.
 
-* `amdgpu-pro-opencl-icd` is missing the `/etc/ld.so.conf.d/amdgpu.conf` file.  This file is provided
+4. `amdgpu-pro-opencl-icd` is missing the `/etc/ld.so.conf.d/amdgpu.conf` file.  This file is provided
 by `amdgpu-pro-core`, which however also blacklists the `radeon` driver
-(as described [above](#amd-s-cpu-driver)).  This makes it impossible to do a 'CPU-only' install.
-
-**Solution:**
+(as described [above](#amd-s-cpu-driver)).  This makes it impossible to do a 'CPU-only' install. **Solution:**
 
   * Move the `ld.so.conf.d/amdgpu.conf` to package `amdgpu-pro-opencl-icd` as it should be installed
   together with the libraries in that package.  Installing that package provide OpenCL CPU support.
