@@ -8,7 +8,7 @@ updated: 2016-09-10
 
 
 This post documents how I got OpenCL working on Ubuntu 16.04 on my dual (hybrid) graphics Dell M4800
-workstation.  The machine has an integrated Intel HD Graphics 4600 GPU, and a discrete AMD/ATI Radeon HD 8870M.
+workstation.  The machine has an integrated Intel HD Graphics 4600 GPU, and a discrete AMD/ATI FirePro M5100.
 
 
 ## Background
@@ -76,8 +76,8 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 ## Sidestep: graphics switching
 
 This section is about Open*GL* rather than OpenCL.  I include it to document the simplicity
-of switching to the discrete GPU for rendering.  It can even be done for a single application,
-and all it requires is setting environment variable `DRI_PRIME`.
+of switching to the discrete GPU for rendering.  All it requires is setting an environment
+variable:
 
 ```bash
 $ xrandr --listproviders
@@ -220,8 +220,9 @@ with no out-of-distro repositories.  The "nice to have" that's missing (given my
 ## Going beyond: installing CPU support
 
 Unfortunately there isn't currently in Ubuntu an OpenCL ICD for CPUs.  One used to come with
-`fglrx`, and supported AMD and Intel CPUs, but that package was dropped in Ubuntu 16.04.   There
-are binary installers from Intel and AMD, but I avoid them.  I'm on Debian/Ubuntu for a reason.
+`fglrx`, and supported AMD and Intel CPUs, but that package was dropped in Ubuntu 16.04.
+There are binary installers from Intel and AMD, but I tend to avoid them.  I'm on
+Debian/Ubuntu precisely because I value solid dependency management.
 
 However, things are improving.  Here are the options.
 
@@ -243,7 +244,7 @@ works:
 
 * Download and unpack the 
 [AMDGPU-Pro](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
-driver (more on this below) and install *only* the ICD package:
+beta driver (more on this below) and install *only* the ICD package:
 
 ```bash
 $ wget 'https://www2.ati.com/drivers/linux/amdgpu-pro_16.30.3-315407.tar.xz'
@@ -312,9 +313,8 @@ needed] is at least as good, and Intel devs are putting lots of effort into it. 
 
 #### AMD's AMDGPU-PRO driver
 
-It seems that AMDGPU-PRO will supercede Catalyst (fglrx), which was dropped from Ubuntu 16.04.
-AMDGPU-PRO will have a GPL kernel module and come in supported Debian packages.  It is still
-in beta.  More on this
+AMDGPU-PRO will supercede Catalyst (fglrx), which was dropped from Ubuntu 16.04.  It will have
+a GPL kernel module and come in supported Debian packages.  It is still in beta.  More on this
 [here](http://www.pcworld.com/article/3075837/linux/amds-gaming-optimized-amdgpu-pro-driver-for-linux-is-in-beta.html),
 and
 [on AMDGPU-PRO's official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
@@ -325,12 +325,11 @@ packaging has yet to leave alpha.  My notes are in
 [Appendix I](#appendix-i-amdgpu-pro-install-notes) below.
 
 Note that AMDGPU-PRO supports OpenCL 1.2, not 2.0 (which oddly its predecessor `fglrx` already
-supported).  Also, the AMD SDK (see below) still lists `fglrx`, not AMDGPU-PRO as a requirement.
+did).  The AMD SDK (see below) still lists Catalyst, not AMDGPU-PRO, as a requirement.
 
 #### AMD's Catalyst (fglrx) driver
 
-I also tested installation of the Catalyst Pro (workstation) driver.  This driver, as well as
-the regular Catalyst driver, can be 
+I also tested installation of the Catalyst Pro (workstation) driver.  The Catalyst driver can be 
 [built "headless"](http://support.amd.com/en-us/kb-articles/Pages/XServerLessDriver.aspx),
 meaning that you can build and install just the OpenCL part:
 
@@ -341,11 +340,11 @@ $ cd fglrx-15.302.2301
 $ sudo ./amd-driver-installer-15.302.2301-x86.x86_64.run --buildpkg Ubuntu/xenial --NoXServer
 ```
 
-This builds `fglrx-core_15.302-0ubuntu1_amd64.deb`.  Unfortunately this package has the
-same issues as AMDGPU-PRO: it needlessly conflicts with the Ubuntu 16.04 OpenCL packages.
-Worse, the kernel module fails to build against current kernels, and once you've solved that
-it turns out that `clinfo` runs once and segfaults on every next invocation.  An old bug 
-resurfacing because AMD forgot to add `/etc/ati/amdpcsdb.default` to the package.
+This builds `fglrx-core_15.302-0ubuntu1_amd64.deb`.  Unfortunately this package has issues:
+like AMDGPU-PRO it needlessly conflicts with the Ubuntu 16.04 OpenCL packages.  The kernel
+module fails to build against current kernels, and once you've solved that it turns out that
+`clinfo` runs once and segfaults ever after.  An old bug resurfacing because AMD forgot to
+add `/etc/ati/amdpcsdb.default` to the package.
 
 Still, with some patching [documented here](https://github.com/zwets/amd-opencl-patches)
 I managed to install the driver and get OpenCL support:
