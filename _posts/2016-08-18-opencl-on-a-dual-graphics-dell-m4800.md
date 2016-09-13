@@ -3,7 +3,7 @@ title: OpenCL on a dual graphics Dell M4800
 layout: post
 excerpt: "Documenting how I got OpenCL working on Ubuntu 16.04 on my dual graphics Dell M4800 workstation."
 published: true
-updated: 2016-09-11
+updated: 2016-09-13
 ---
 
 
@@ -23,8 +23,9 @@ I avoid PPAs, `sudo make install` and certainly `sudo ./run-installer.sh`.[^1]  
 installing OpenCL would involve a lot of the latter, but it turned out that `apt-get install` goes
 a long way.
 
-tl;dr: `sudo apt-get install ocl-icd-libopencl1 beignet-opencl-icd mesa-opencl-icd` and both GPUs
-were available as OpenCL devices.  The CPU could be added quite easily. Below is my install log. YMMV.
+The **tl;dr** version: `sudo apt-get install ocl-icd-libopencl1 beignet-opencl-icd mesa-opencl-icd`
+makes both GPUs available as OpenCL devices.  The CPU can be added quite easily.  Below is my
+install log. YMMV.
 
 
 ## Exploring the GPUs
@@ -139,13 +140,14 @@ Number of platforms   0   # We haven't installed ICDs yet
 Each ICD is defined by a file with extension `.icd` in directory `/etc/OpenCL/vendors`.  The
 first line in the ICD file specifies the path to a shared library.  The ICD Loader `dlopen`s
 this library when the platform is requested.  Environment variables control the order of the
-platforms, the default platform, and the debugging level.  See `man libOpenCL`.
+platforms, the default platform, and the debugging level.  For instance, to run an application
+on a specific platform, set `OCL_ICD_VENDORS=<icd-file-name>`.  See `man libOpenCL`.
 
 
 ## Installing ICDs
 
-Ubuntu provides ICDs for Intel and Nvidia GPUs.  AMD is supported via the Mesa ICP, which 
-implements OpenCL in terms of the open source DRM/DRI drivers:
+Ubuntu provides ICDs for Intel and Nvidia GPUs.  AMD is supported via the Mesa ICD, which 
+implements OpenCL atop the open source DRM/DRI drivers:
 
 ```bash
 $ apt-cache search '^opencl-icd$'  # virtual package provided by all ICDs
@@ -161,7 +163,7 @@ $ apt-cache depends mesa-opencl-icd  # cards supported by the mesa ICD
 ... r600, amdgcn, amdgpu1, radeon1, nouveau2 ...
 ```
 
-Install the Intel and Mesa ICDs to obtain the relevant platforms:
+Install the Intel and Mesa ICDs to obtain the respective platforms:
 
 ```bash
 $ sudo apt-get install beignet-opencl-icd mesa-opencl-icd
@@ -172,11 +174,8 @@ Platform 1: Clover
  `-- Device 0: AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
 ```
 
-It is that simple; two OpenCL devices ready to rock.  Run `clinfo` without
+It is that simple.  Two OpenCL devices ready to rock.  Run `clinfo` without
 `-l` for a detailed overview of the platforms and the features of each device.
-
-To run an application on a specific platform, set `OCL_ICD_VENDORS=mesa.icd` (or
-any name in `/etc/OpenCL/vendors`).  See `man libOpenCL`.
 
 
 ## Smoke Testing
@@ -214,10 +213,10 @@ GOOD
 ```
 
 Good!  We have a working OpenCL system supporting both graphics cards, and needed only `apt-get install`
-with no out-of-distro repositories.  The "nice to have" that's missing is OpenCL **CPU** support.
+with no out-of-distro repositories.  The "nice to have" to add is OpenCL **CPU** support.
 
 
-## Going beyond: installing CPU support
+## Installing CPU support
 
 Unfortunately there isn't currently in Ubuntu an OpenCL ICD for CPUs.  One used to come with
 `fglrx`, supporting AMD and Intel CPUs, but that package was dropped in Ubuntu 16.04.
@@ -295,7 +294,7 @@ harmless manual configuration change).
 ## Installing proprietary GPU support
 
 From here on it's optimisation only.  We have a working OpenCL system which makes available
-both GPUs and the CPU. All software used is open source (AMDGPU-PRO will be in Ubuntu once
+both GPUs and the CPU.  All software used is open source (AMDGPU-PRO will be in Ubuntu once
 it leaves beta). Inquisitive minds may wonder if the proprietary drivers have more to offer,
 certainly for the AMD GPU which currently operates via the generic Mesa layer.
 
@@ -316,8 +315,8 @@ and
 [on AMDGPU-PRO's official page](http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx),
 which has installation instructions, compatibility lists, and the like.
 
-Installing the beta packages required care.  AMDGPU-PRO's Debian/Ubuntu packages
-still need some work as they conflict with packages in Ubuntu 16.04.  See 
+Installing the beta packages required care.  AMDGPU-PRO's Debian/Ubuntu packages still need
+some work as they conflict with packages in Ubuntu 16.04.  See 
 [Appendix I](#appendix-i-amdgpu-pro-install-notes) below for details.
 
 Installation went fine, but no GPU showed up in `clinfo` output, possibly because my FirePro
@@ -327,19 +326,20 @@ M5100 isn't supported (yet).
 
 When AMDGPU-PRO failed I tried the Catalyst Pro (workstation) driver.  The Catalyst driver can be 
 [built "headless"](http://support.amd.com/en-us/kb-articles/Pages/XServerLessDriver.aspx),
-meaning that you can build and install just the OpenCL part:
+meaning that you can build and install just the OpenCL part, without going for the whole
+graphics stack:
 
 ```bash
-# After installing the build-dependencies (devscripts, dh-modaliases, ...):
+$ # Omitting installation steps for the build-dependencies (devscripts, dh-modaliases, ...)
 $ unzip 15.302.2301-linux-retail_end_user.zip  # This is the "Pro" version for my FirePro, YMMV
 $ cd fglrx-15.302.2301
 $ sudo ./amd-driver-installer-15.302.2301-x86.x86_64.run --buildpkg Ubuntu/xenial --NoXServer
 ```
 
-This builds `fglrx-core_15.302-0ubuntu1_amd64.deb`.  Unfortunately the package has issues:
-like AMDGPU-PRO it conflicts with the Ubuntu 16.04 OpenCL packages; the kernel module fails
-to build against current kernels, and `clinfo` runs once and segfaults ever after.
-An old bug resurfacing because AMD forgot to add `/etc/ati/amdpcsdb.default` to the package.
+This builds `fglrx-core_15.302-0ubuntu1_amd64.deb`, but not without a fair share of issues:
+the kernel module fails to build against current kernels; `clinfo` runs once and segfaults ever
+after (an old bug resurfacing due to AMD forgetting to add `/etc/ati/amdpcsdb.default` to the
+package); and, like AMDGPU-PRO, the package conflicts with the Ubuntu 16.04 OpenCL packages.
 
 Still, with some patching [documented here](https://github.com/zwets/amd-opencl-patches)
 I managed to install the driver *and* got full OpenCL support:
@@ -416,12 +416,13 @@ OpenCL infrastructure.  Solution:
 
 * `amdgpu-pro-opencl-icd` is missing the `/etc/ld.so.conf.d/amdgpu.conf` file.  This file is provided
 by `amdgpu-pro-core`, which however also blacklists the `radeon` driver
-(as described [above](#amd-s-cpu-driver)).  This makes it impossible to do a 'CPU-only' install. Solution:
+(as described [above](#amd-s-cpu-driver)), thus preventing a 'CPU-only' install. Solution:
 
-    * Move the `ld.so.conf.d/amdgpu.conf` to package `amdgpu-pro-opencl-icd` as it should be installed
-    together with the libraries in that package.  Installing that package provide OpenCL CPU support.
-    * Create a new `amdgpu-pro-opencl-gpu-icd` package, and make that (as well as `amdgpu-pro-graphics`)
-    depend on the `core` package which has the driver and the radeon blacklist.
+    * Move the `ld.so.conf.d/amdgpu.conf` to package `amdgpu-pro-opencl-icd` as it should logically be
+    installed together with the libraries in that package.  The package provides the CPU device.
+    * Create a new `amdgpu-pro-opencl-gpu-icd` package to provide the GPU device, and make that
+    package (as well as `amdgpu-pro-graphics`) depend on the `core` package which has the driver
+    and the radeon blacklist.
 
 
 ###### Footnotes
