@@ -7,13 +7,11 @@ layout: archive
 
 <div class="notes">
 
-  <p>Should show a list below but I can't seem to figure out the Jekyll / Liquid incantation</p>
-
-  <ul class="pages">
-    {% for page in site.categories.notes %}
+  <ul class="notes">
+    {% for note in site.notes %}
       <li>
-        <a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
-        <span class="page-date">{{ page.date | date: "%b %-d, %Y" }}</span>
+        <a class="note-link" href="{{ note.url | prepend: site.baseurl }}">{{ note.title }}</a>
+        <span class="note-excerpt">{{ note.excerpt }}</span>
       </li>
     {% endfor %}
   </ul>

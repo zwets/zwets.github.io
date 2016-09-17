@@ -149,9 +149,26 @@ a:visited { color: #205caa; }
 
 .home h1 { margin-bottom: 25px; }
 
-.posts { list-style-type: none; }
+.home .posts { float: left; width: 50%; }
 
-.posts li { margin-bottom: 30px; }
+.home .notes { float: right; width: 45%; }
+
+.posts h1,
+.notes h1 { 
+  font-size: 36px;
+  letter-spacing: -1.25px;
+  line-height: 1;
+  font-weight: 300;
+}
+
+/* Archive styles */
+/* ----------------------------------------------------------*/
+
+.posts,
+.notes { list-style-type: none; }
+
+.posts li,
+.notes li { margin-bottom: 30px; }
 
 .posts .post-link {
   font-size: 24px;
@@ -163,6 +180,18 @@ a:visited { color: #205caa; }
   display: block;
   font-size: 15px;
   color: #818181;
+}
+
+.notes .note-link {
+  font-size: 24px;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.notes .note-excerpt {
+  display: block;
+  font-size: 18px;
+  color: #515151;
 }
 
 

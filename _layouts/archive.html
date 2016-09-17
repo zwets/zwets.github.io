@@ -1,0 +1,20 @@
+---
+layout: default
+---
+<div class="archive">
+
+  <header class="archive-header">
+    <h1>{{ page.title }}</h1>
+    {% if page.excerpt %}<h2>{{ page.excerpt }}</h2>{% endif %}
+  </header>
+
+  <div class="archive-content">
+    {{ content }}
+  </div>
+
+  <footer class="archive-footer">
+    <p class="text">Comment?  Feel welcome to <a href="mailto:{{ site.email }}">drop me an email</a> or <a rel="nofollow" href="https://github.com/zwets/zwets.github.io/issues/new">raise an issue</a>.</p>
+  </footer>
+
+</div> 
+

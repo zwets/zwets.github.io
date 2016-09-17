@@ -1,7 +1,5 @@
 ---
 title: Jekyll Notes
-layout: page
-category: notes
 tags: jekyll, github, markdown
 excerpt: Scratch page with Jekyll and (GitHub flavoured) Markdown samples and links.
 ignore: { permalink, category, categories, tags, published }
@@ -45,8 +43,13 @@ From the Jekyll site
 
 {: .terminal }
 ```bash
-echo "source 'https://rubygems.org'" > Gemfile
-echo "gem 'github-pages'" >> Gemfile
+echo "source 'https://rubygems.org'
+
+require 'json'
+require 'open-uri'
+versions = JSON.parse(open('https://pages.github.com/versions.json').read)                                                                                                                                          
+gem 'github-pages', versions['github-pages']" > Gemfile
+
 bundle install
 bundle update # regularly
 bundle exec jekyll serve

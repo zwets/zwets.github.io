@@ -5,12 +5,12 @@
   excerpt: "io.zwets.it"
 
 - title: Posts
-  url: /
+  url: /posts/
   excerpt: "Latest posts"
 
 - title: Notes
   url: /notes/
-  excerpt: "Notes by category"
+  excerpt: "Miscellaneous Notes"
 
 #- title: Links
 #  url: /links/

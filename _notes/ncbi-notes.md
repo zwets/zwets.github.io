@@ -1,9 +1,7 @@
 ---
 title: NCBI Notes
-layout: page
-category: notes
 excerpt: Miscellaneous links and notes kept on the NCBI databases and tools.
-published: false
+published: true
 ignore: { permalink }
 ---
 
@@ -14,8 +12,8 @@ ignore: { permalink }
 ## TODO
 - [ ] SRA search functions!
 - [ ] Overview of All NCBI Software and Data, and HOWTO's
-    https://www.ncbi.nlm.nih.gov/guide/data-software/
-    http://www.ncbi.nlm.nih.gov/home/tutorials.shtml
+    <https://www.ncbi.nlm.nih.gov/guide/data-software/>
+    <http://www.ncbi.nlm.nih.gov/home/tutorials.shtml>
 - [ ] How to find SNPs using Blast
     https://www.ncbi.nlm.nih.gov/guide/howto/view-all-snps/
     ftp://ftp.ncbi.nih.gov/pub/factsheets/HowTo_Finding_SNP_by_BLAST.pdf

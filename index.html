@@ -7,13 +7,22 @@ excerpt: "Home page of Marco van Zwetselaar's IT domain"
 
 <div class="home">
 
-  <h1>Latest Posts</h1>
-
   <ul class="posts">
+    <h1>Posts</h1>
     {% for post in site.posts %}
       <li>
-        <span class="post-date">{{ post.date | date: "%b %-d, %Y" }}</span>
         <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        <span class="post-date">{{ post.date | date: "%b %-d, %Y" }}{% if post.updated %} - {{ post.updated | date: "%b %-d, %Y" }}{% endif %}</span>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <ul class="notes">
+    <h1>Notes</h1>
+    {% for note in site.notes %}
+      <li>
+        <a class="note-link" href="{{ note.url | prepend: site.baseurl }}">{{ note.title }}</a>
+        <span class="note-excerpt">{{ note.excerpt }}</span>
       </li>
     {% endfor %}
   </ul>
