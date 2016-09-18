@@ -43,22 +43,17 @@ From the Jekyll site
 
 {: .terminal }
 ```bash
-echo "source 'https://rubygems.org'
+$ echo "source 'https://rubygems.org'
 
-require 'json'
-require 'open-uri'
-versions = JSON.parse(open('https://pages.github.com/versions.json').read)                                                                                                                                          
-gem 'github-pages', versions['github-pages']" > Gemfile
+# This Gem pulls in all GitHub Pages dependencies.
+# It should be close to the current latest:
+# https://pages.github.com/versions.json
 
-bundle install
+gem 'github-pages'" > Gemfile
+
+bundle install --path=vendor/bundle
 bundle update # regularly
 bundle exec jekyll serve
-```
-
-```bash
-# Seems to be broken
-bundle install gem jekyll-docs
-bundle exec jekyll docs
 ```
 
 ### Kramdown
