@@ -2,11 +2,14 @@
 title: BLAST Command-line Reference
 excerpt: "Command-line reference for the NCBI BLAST suite, reorganised because the tools lack individual man pages and information is spread all over."
 layout: page
+updated: 2016-11-27
 tags: blast
 ---
 
 The command-line options for the Blast+ CLI Tools.  Taken from the [User Manual](http://www.ncbi.nlm.nih.gov/books/NBK1763/)
 because the tools lack individual manpages and information is spread all over.
+
+**NOTE: documentation below applies to the 2.2 version, which is current in Ubuntu 16.04.  NCBI released 2.5 in late 2016 when they switched to https for remote queries, and after recently having moved from _gi_ to _accession_ as the primary identifier.  Features such as `-gilist` may have been deprecated together with the abolishment of the GI.**
 
 ## Table of Contents
 {: .no_toc}
