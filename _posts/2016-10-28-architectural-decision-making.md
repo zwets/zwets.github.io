@@ -12,16 +12,21 @@ viewpoints, and each viewpoint defines a different set of priorities in
 terms of which alternatives are evaluated.
 
 But this doesn't at all mean that architectural considerations become a
-matter of taste, and the subject of endless debate[^1].  In my experience,
-a very productive approach to architectural decision making is to split
-the discussion into two decoupled levels: evidence and utility.  I have
-successfully used this method in workshops to achieve broadly supported
-architectural decisions, even in polarised environments.
+matter of taste, or must be the subject of endless debate[^1], as often
+happens.  (I define "architectural decisions" loosely as: decisions in IT
+which have a large impact over a wide scope.  They take place at every
+level from IT strategy down to developer teams.)
+
+In my experience, a very productive approach to shared architectural
+decision making is to split the discussion into two decoupled levels:
+evidence and utility.  I have successfully used this in workshops to
+achieve "the best" architectural decisions, even in environments where
+opinions were strongly divided.
 
 #### Evidence 
 
 On the evidence level, the goal is to establish agreed-upon objective
-conclusions based on evidence.  E.g.: "alternative A takes X less time to
+conclusions based on evidence.  E.g.: "Alternative A takes X less time to
 build, whereas B is Y times more reliable".  The quantities X and Y
 needn't be exact, but must be supported by evidence and be uncontested by
 any party.
@@ -33,9 +38,9 @@ better because it follows service-oriented principles" is tabled until
 
 This phase turns out to be both valuable and enjoyable for participants.
 It is all about engineering, and everyone is working together toward a
-shared goal, namely to establish measurable, objective truths.  Almost
-as a side effect, a lot of insight is gained that will be useful for the
-eventual design of the solution.
+shared goal, namely to establish measurable, objective truths about the
+competing alternatives.  Almost as a side effect, a lot of insight is
+gained that will be useful for the eventual design of the solution.
 
 #### Utility
 
@@ -43,20 +48,20 @@ On the "utility" level, the goal is to elicit viewpoints potentially held
 by stakeholders, and the probable valuation of the alternatives given
 their frames of reference (objectives, constraints, priorities).  In
 decision theory this would be called determining the utility functions.
-Sideline: in very complex decision processes,
+Note to self: in very complex decision processes,
 [probabilistic graphical modeling](https://www.coursera.org/learn/probabilistic-graphical-models-2-inference)
-may be a useful tool.
+a useful tool?
 
 Again, the discussion is not about deciding the optimal alternative, or
 what is the superior viewpoint.  The goal is to make all valid viewpoints
 explicit, so as to understand how alternatives are rated differently by
-different people.  Participants are expected to not argue only for their
+different people.  Participants are expected to not argue for their
 own view, but also to come up with the reasoning of other stakeholders.
 
 It is especially during this phase that differences between (potentially
 warring) factions are resolved.  They might not sway their opinion just
 yet, but gaining an understanding of where other people "are coming from",
-and realising one's own biases are much more important benefits.
+and realising one's own biases are the much more important benefits.
 In fact, even when the goal of this phase is not to obtain consensus, it
 tends to bring parties much closer together.
 
@@ -71,7 +76,7 @@ Clearly, the decision must be made by the person with the responsibility
 and authority to do this.  That person's viewpoint will be known at this
 point (or else a major stakeholder was overlooked in the previous phase),
 but this does not mean that his/her viewpoint necessarily determines the
-outcome.  It 'behooves' the decision taker, now that all viewpoints are
+outcome.  It behooves the decision taker, now that all viewpoints are
 known, to consider these in making 'the right decision'.
 
 What is interesting is that during the process, the single decision maker
@@ -90,11 +95,10 @@ shared understanding of the outcome.
 
 The above is not just theory.  I was positively surprised by its results
 (and the fun had and insights gained by all participants) when I first
-trialed it at a client where I was consulting.  It is also a great way for
-people to learn to "think as an architect".  I later repeated and refined
-the method, but then 
-[left architecture consulting for genomics](http://io.zwets.it/about/), 
-and was recently reminded that I should document this _somewhere_.  Hence
+trialed it at a client where I was consulting.  I later repeated it and
+refined the way the workshops worked, but then 
+[left architecture consulting for genomics](http://io.zwets.it/about/). 
+I was recently reminded that I should document this _somewhere_.  Hence
 this post.
 
 The seeds for these ideas came from an obscure but well-researched and
@@ -107,5 +111,5 @@ which I couldn't get to work. :)
 
 ---
 
-[^1] I don't remember who coined it, but I love the proposed collective noun (as in: "a pride of lions" and "a flock of seagulls") for architects: an _argument_ of architects.
+[^1]: I don't remember who coined it, but I love the proposed collective noun (as in: "a pride of lions" and "a flock of seagulls") for architects: an _argument_ of architects.
 
