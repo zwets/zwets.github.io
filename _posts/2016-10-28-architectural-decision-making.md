@@ -13,9 +13,9 @@ terms of which alternatives are evaluated.
 
 But this doesn't at all mean that architectural considerations become a
 matter of taste, or must be the subject of endless debate[^1], as often
-happens.  (I define "architectural decisions" loosely as: decisions in IT
+happens.  I define "architectural decisions" loosely as: decisions in IT
 which have a large impact over a wide scope.  They take place at every
-level from IT strategy down to developer teams.)
+level from IT strategy down to developer teams.
 
 In my experience, a very productive approach to shared architectural
 decision making is to split the discussion into two decoupled levels:
@@ -34,7 +34,7 @@ any party.
 Any argument which cannot (in principle) be substantiated by facts is
 disallowed in this phase.  For instance, a statement "alternative C is
 better because it follows service-oriented principles" is tabled until
-"better" is quantified, and the service-oriented principles are qualified.
+"better" is quantified, and "service-oriented principles" are qualified.
 
 This phase turns out to be both valuable and enjoyable for participants.
 It is all about engineering, and everyone is working together toward a
@@ -58,10 +58,10 @@ explicit, so as to understand how alternatives are rated differently by
 different people.  Participants are expected to not argue for their
 own view, but also to come up with the reasoning of other stakeholders.
 
-It is especially during this phase that differences between (potentially
-warring) factions are resolved.  They might not sway their opinion just
-yet, but gaining an understanding of where other people "are coming from",
-and realising one's own biases are the much more important benefits.
+It is especially during this phase that differences between factions are
+resolved.  They might not sway their opinion just yet, but gaining an
+understanding of where other people "are coming from" as well as an
+awareness of one's own biases are the much more important benefits.
 In fact, even when the goal of this phase is not to obtain consensus, it
 tends to bring parties much closer together.
 
@@ -72,9 +72,9 @@ been, haven't brought us further.  At the end of the analysis we have
 collected objective facts and a shared understanding of the different
 valuations, but what is the decision going to be?
 
-Clearly, the decision must be made by the person with the responsibility
+The final decision will be made by the person with the responsibility
 and authority to do this.  That person's viewpoint will be known at this
-point (or else a major stakeholder was overlooked in the previous phase),
+point (or else a major stakeholder was overlooked in the previous phase!),
 but this does not mean that his/her viewpoint necessarily determines the
 outcome.  It behooves the decision taker, now that all viewpoints are
 known, to consider these in making 'the right decision'.

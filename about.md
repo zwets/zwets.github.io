@@ -25,7 +25,7 @@ Then came Pascal and LISP in the 80s -- as well as an obscure DBase 3 language w
 
 #### Why IO?
 
-I started this site when I found out that I could conveniently host so-called "GitHub Pages" at zwets.github.io, while using a domain name of my own.  The **io** from github.io stuck, and apart from it being fitting in a geeky way, you can ask any Italian why io makes sense. 
+I started this site when I found out that I could conveniently host so-called "GitHub Pages" at zwets.github.io, while using a domain name of my own.  The **io** from github.io stuck, and apart from it being fitting in a geeky way, ask any Italian why io makes sense. 
 
 ###### Footnotes
 
