@@ -14,7 +14,7 @@ I like the term "automation" for our field of work.  It stresses the *purpose* o
 
 > The first time around explore, the second time recognise repetition, the third time automate.  
 
-Much of what I keep in my [public repositories](https://github.com/zwets) are shell scripts wrapping tedious, error-prone, or repetitious operations, that I think may be useful to others[^1].  They are operationalised documentation.  When you need to keep notes anyway[^2], it pays to put in the extra effort to condense all NTK into an executable script.  It's like having unit tests for your notes.
+Much of what I keep in my [public repositories](https://github.com/zwets) are shell scripts wrapping tedious, error-prone, or repetitious operations.  I initially wrote these for my own use, but I've tried to make them useful for others[^1].  They are operationalised documentation.  When you need to keep notes anyway[^2], it pays to put in the extra effort to condense all NTK into an executable script.  It's like having unit tests for your notes.
 
 ###### Footnotes
 
