@@ -9,9 +9,9 @@ Tonight I carried my youngest daughter (Vicky, 5 yo) from the car to our
 house.  As I shut the car she said "Careful! I'm always worried that I
 get my fingers caught between the door."
 
-It actually happened this week that she got them stuck twice in a single
-day.  The usual accident: a sibling closing the door while she was still
-getting out.  Three fingers stuck at the hinge side ... owww!
+It actually happened twice over the past two weeks.  The usual accident:
+a sibling closing the door while she was still getting out.  Three fingers
+stuck at the hinge side ... owww!
 
 We were lucky.  Land Rover hinges have plenty of play, so it was painful
 but she still has all her fingers.
