@@ -3,7 +3,7 @@ title: OpenCL on a dual graphics Dell M4800
 layout: post
 excerpt: "Documenting how I got OpenCL working on Ubuntu 16.04 on my dual graphics Dell M4800 workstation."
 published: true
-updated: 2016-10-31
+updated: 2017-03-01
 ---
 
 
@@ -73,46 +73,6 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 2:DIS-Audio: :Off:0000:01:00.1
 ```
 (Note: `vga_switcheroo` is the legacy kludge for hybrid graphics systems exposed by the `radeon` module.)
-
-
-## Sidestep: graphics switching
-
-This section is about Open*GL* rather than OpenCL.  I include it to document the simplicity
-of switching to the discrete GPU for rendering.  All it requires is setting an environment
-variable:
-
-```bash
-$ xrandr --listproviders
-Providers: number : 3
-Provider 0: id: 0x72 cap: 0x9, Source Output, Sink Offload crtcs: 4 outputs: 5 associated providers: 2 name:Intel
-Provider 1: id: 0x49 cap: 0x6, Sink Output, Source Offload crtcs: 6 outputs: 4 associated providers: 2 name:VERDE @ pci:0000:01:00.0
-Provider 2: id: 0x49 cap: 0x6, Sink Output, Source Offload crtcs: 6 outputs: 4 associated providers: 2 name:VERDE @ pci:0000:01:00.0
-
-$ DRI_PRIME=0 glxgears -info | grep -E '(GL_RENDERER|FPS)'
-GL_RENDERER   = Mesa DRI Intel(R) Haswell Mobile        # Intel renders
-305 frames in 5.0 seconds = 60.871 FPS                  # at rate synced with monitor
-
-$ DRI_PRIME=1 glxgears -info | grep -E '(GL_RENDERER|FPS)'
-GL_RENDERER   = Gallium 0.4 on AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
-70041 frames in 5.0 seconds = 14008.121 FPS             # AMD renders ... faster
-
-$ DRI_PRIME=2 glxgears -info | grep -E '(GL_RENDERER|FPS)'
-GL_RENDERER   = Mesa DRI Intel(R) Haswell Mobile 	# Surprise: Intel renders
-53971 frames in 5.0 seconds = 10793.093 FPS		# without the syncing
-```
-
-When `DRI_PRIME` is 0 or unset, the Intel is selected.  Its rendering frequency is 60Hz,
-synchronised with the monitor refresh rate.  `DRI_PRIME=1` selects the AMD discrete card.
-`DRI_PRIME=2` (for some reason) selects the Intel, but without synchronised rendering.
-
-I was surprised to see the high frame rate on the IGD.  Even if it is 30% below the DIS,
-it is still considerable.  Just because it is an integrated GPU, doesn't mean that it can't
-be used for computing.
-
-**Note:** According to
-[this page](http://askubuntu.com/questions/593098/hybrid-graphic-card-drivers-amd-radeon-hd-8570-intel-hd-graphics-4000/620756#620756)
-it is required to do `xrandr --setprovideroffloadsink` to make `DRI_PRIME` work,
-but I get the exact same results when I don't.  ([May be related to DRI3?](https://wiki.archlinux.org/index.php/PRIME))
 
 
 ## Installing OpenCL
@@ -243,9 +203,9 @@ works:
 beta driver (more on this below) and install *only* the ICD package:
 
 ```bash
-$ wget 'https://www2.ati.com/drivers/linux/amdgpu-pro_16.30.3-315407.tar.xz'
-  # note: link was current on 2016-08-20, check the AMDGPU-Pro page for latest
-$ tar Jxvf amdgpu-pro_16.30.3-315407.tar.xz
+$ wget 'https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-16.60-379184.tar.xz'
+  # note: link was current on 2017-03-01, check the AMDGPU-Pro page for latest
+$ tar Jxvf amdgpu-pro_16.60-379184.tar.xz
 $ cd amdgpu-pro-driver
 $ sudo dpkg -i amdgpu-pro-opencl-icd_*_amd64.deb
 ```
@@ -439,6 +399,51 @@ by `amdgpu-pro-core`, which however also blacklists the `radeon` driver
     * Create a new `amdgpu-pro-opencl-gpu-icd` package to provide the GPU device, and make that
     package (as well as `amdgpu-pro-graphics`) depend on the `core` package which has the driver
     and the radeon blacklist.
+
+
+## Appendix II: graphics switching
+
+This section is about Open*GL* rather than OpenCL.  I include it to document the simplicity
+of switching to the discrete GPU for rendering.  All it requires is setting the environment
+variable `DRI_PRIME`.
+
+> **Note:** moved to the appendix because it is off-topic.  Also, after a number of
+> `apt-get update`s the Gallium rendering gives a black window and its framerate is actually
+> lower (11000) than that for Mesa (12900).
+
+```bash
+$ xrandr --listproviders
+Providers: number : 3
+Provider 0: id: 0x72 cap: 0x9, Source Output, Sink Offload crtcs: 4 outputs: 5 associated providers: 2 name:Intel
+Provider 1: id: 0x49 cap: 0x6, Sink Output, Source Offload crtcs: 6 outputs: 4 associated providers: 2 name:VERDE @ pci:0000:01:00.0
+Provider 2: id: 0x49 cap: 0x6, Sink Output, Source Offload crtcs: 6 outputs: 4 associated providers: 2 name:VERDE @ pci:0000:01:00.0
+
+$ DRI_PRIME=0 glxgears -info | grep -E '(GL_RENDERER|FPS)'
+GL_RENDERER   = Mesa DRI Intel(R) Haswell Mobile        # Intel renders
+305 frames in 5.0 seconds = 60.871 FPS                  # at rate synced with monitor
+
+$ DRI_PRIME=1 glxgears -info | grep -E '(GL_RENDERER|FPS)'
+GL_RENDERER   = Gallium 0.4 on AMD CAPE VERDE (DRM 2.43.0, LLVM 3.8.0)
+70041 frames in 5.0 seconds = 14008.121 FPS             # AMD renders ... faster
+
+$ DRI_PRIME=2 glxgears -info | grep -E '(GL_RENDERER|FPS)'
+GL_RENDERER   = Mesa DRI Intel(R) Haswell Mobile 	# Surprise: Intel renders
+53971 frames in 5.0 seconds = 10793.093 FPS		# without the syncing
+```
+
+When `DRI_PRIME` is 0 or unset, the Intel is selected.  Its rendering frequency is 60Hz,
+synchronised with the monitor refresh rate.  `DRI_PRIME=1` selects the AMD discrete card.
+`DRI_PRIME=2` (for some reason) selects the Intel, but without synchronised rendering.
+
+I was surprised to see the high frame rate on the IGD.  In fact, with current package
+versions, the IGD actually wins.  Just because it is an integrated GPU, doesn't mean that
+it can't be used for computing.
+
+**Note:** According to
+[this page](http://askubuntu.com/questions/593098/hybrid-graphic-card-drivers-amd-radeon-hd-8570-intel-hd-graphics-4000/620756#620756)
+it is required to do `xrandr --setprovideroffloadsink 0x49 0x72` (where the hex numbers are
+the card IDs from the `xrandr --listproviders` output) to make `DRI_PRIME` work,
+but I get the exact same results when I don't.  ([May be related to DRI3?](https://wiki.archlinux.org/index.php/PRIME))
 
 
 ###### Footnotes
