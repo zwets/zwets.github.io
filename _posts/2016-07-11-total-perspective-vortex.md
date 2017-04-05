@@ -23,15 +23,15 @@ stars in our galaxy.
 Once you've grasped that perspective on Earth's sheer tininess 
 and somewhat come to terms with our galactical insignificance, let's
 put that perspective in perspective: the 100,000,000,000 stars
-you see are only *our* galaxy.  Our galaxy is one of 200,000,000,000
-galaxies.
+you see are only *our* galaxy.  There are 200,000,000,000 galaxies
+just like it.
 
 Having seen Earth in its place relative to the universe as a whole,
-here is the clincher.  Take a look at the place of us humans vis-a-vis
-all other life forms on Earth.  A number of web sites catalogue the so-called
-*Tree of Life*, the evolutionary tree branching out into all known
-- and many more unknown - species.  [OneZoom](http://onezoom.org/) takes 
-this to a whole new level.
+take a look at the place of us humans vis-a-vis all other life on Earth.
+A number of web sites catalogue the so-called *Tree of Life*, the
+evolutionary tree branching out into all known (and many more unknown)
+species.  [OneZoom](http://onezoom.org/) does this in a very pretty
+way.
 
 Spend some time [navigating the tree](http://www.onezoom.org/life.html),
 then try to find us, homo sapiens.  You probably won't, it's a [long
