@@ -83,7 +83,7 @@ $ uf | uf-select 1
 $ uf | uf-select 'Acinetobacter'
 
 # Various ways of cutting from a sequence
-$ uf | uf-cut 1200/1000'  Selects the 1000 bases starting at position 1200
+$ uf | uf-cut 1200/1000  Selects the 1000 bases starting at position 1200
 $ uf | uf-cut 5:-5        Trim four elements off of both ends
 $ uf | uf-circut -50:50   Select 100 bases around the start of a circular sequence
 $ uf | uf-circut 100:99   Select all bases, starting at pos 100 and wrapping around,
@@ -91,11 +91,14 @@ $ uf | uf-circut 100:99   Select all bases, starting at pos 100 and wrapping aro
 
 # Process just the content of each sequence, temporarily removing the FASTA deflines
 uf file.fna | uf-bare | ..processing.. | uf-dress -r <(uf file.fna | uf-headers)
+
+# More at
+git clone 'https://github.com/zwets/unfasta'
 ```
 
-Unfasta won't work for everyone.  It does for me because I work in bash most of the time, and have used the Unix/GNU toolset for decades.  Over that period I have written software in at least a dozen 'proper' programming languages, but when it comes to string processing nothing beats piping together a one-liner in bash.
+Unfasta won't work for everyone.  It does for me because I work in bash most of the time, and have used the GNU toolset for ages.  Over the years I have written software in at least a dozen 'proper' programming languages, but when it comes to string processing nothing beats piping together a one-liner in bash.
 
-If you recognise this, then unfasta will work for you.  If not, spend some time with [the Art of the Command Line](https://github.com/jlevy/the-art-of-command-line) and you may become enlightened.
+If you recognise this, then you know already.  If not, spend some time with [the Art of the Command Line](https://github.com/jlevy/the-art-of-command-line) and hopefully become enlightened.
 
 Find [Unfasta on GitHub](http://github.com/zwets/unfasta).
 
