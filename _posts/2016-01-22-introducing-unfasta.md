@@ -60,12 +60,12 @@ Some examples (all assume FASTA arriving on `stdin`):
 ```bash
 # The starting point is 'uf', which turns line-broken FASTA into unbroken FASTA
 $ uf --help
-... concise but complete description ...
+  ... concise but complete description ...
 
-# And as all uf-utils are shell scripts, there is always the source
+# All uf-utils are shell scripts, so there's always the source
 $ cat `which uf`
-... six lines of `awk` code doing the actual work ...
-... and 60 lines of boilerplate fluff ...
+  ... skip 60 lines of boilerplate to see a ...
+  ... handful of simple lines do the actual work ...
 
 # How many sequences?
 $ zcat seqs.fsa.gz | uf | uf-headers | wc -l
@@ -83,17 +83,16 @@ $ uf | uf-select 1
 $ uf | uf-select 'Acinetobacter'
 
 # Various ways of cutting from a sequence
-$ uf | uf-cut 1200/1000  Selects the 1000 bases starting at position 1200
-$ uf | uf-cut 5:-5        Trim four elements off of both ends
-$ uf | uf-circut -50:50   Select 100 bases around the start of a circular sequence
-$ uf | uf-circut 100:99   Select all bases, starting at pos 100 and wrapping around,
-                          effectively rotating the sequence to start at 100
+$ uf | uf-cut 1200/1000   # Select 1kbp starting at position 1200
+$ uf | uf-cut 5:-5        # Trim four elements off of both ends
+$ uf | uf-circut -50:50   # Select 100b around the start of a circular sequence
+$ uf | uf-circut 100:99   # Rotate to start at base 100 (= select all, wrapping around)
 
 # Process just the content of each sequence, temporarily removing the FASTA deflines
-uf file.fna | uf-bare | ..processing.. | uf-dress -r <(uf file.fna | uf-headers)
+$ uf file.fna | uf-bare | ..processing.. | uf-dress -r <(uf file.fna | uf-headers)
 
 # More at
-git clone 'https://github.com/zwets/unfasta'
+$ git clone 'https://github.com/zwets/unfasta'
 ```
 
 Unfasta won't work for everyone.  It does for me because I work in bash most of the time, and have used the GNU toolset for ages.  Over the years I have written software in at least a dozen 'proper' programming languages, but when it comes to string processing nothing beats piping together a one-liner in bash.
