@@ -1,5 +1,5 @@
 ---
-title: kcst - K-mer Counting Sequence Typer
+title: kcst - K-mer counting sequence typer
 excerpt: "Sub-second species prediction and MLST typing for bacterial genome assemblies"
 published: true
 ignore: { permalink }
