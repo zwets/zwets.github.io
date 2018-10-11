@@ -7,15 +7,15 @@ ignore: { permalink }
 
 Kcst uses k-mer counting (k-mer mapping, really) to perform multi-locus sequence typing (MLST) of bacterial genomes.  It does not employ a separate species prediction step, but instead maps the query genome on all MLST alleles of all species at once.  It then picks the loci that were best covered, and looks up the sequence type(s) corresponding to the top allele combination(s).
 
-Despite mapping on all loci of all species , `kcst` is very fast.  It typically takes less than a second to type a genome.  Clearly, `kcst` will only type species for which an MLST scheme exists.  However nothing prevents you from adding other loci to its database.  In fact, `kcst` is not limited to MLST: the loci could equally well be resistance genes or other genotypic features.  Note however that k-mer mapping is optimal for 'crisp' matching, and won't perform as well when the subject sequences allow for many mismatches.  (See [below](#how-come-it-is-so-fast).)
+Despite mapping on all loci of all species , `kcst` is very fast.  It typically takes less than a second to type a genome.  Clearly, `kcst` will only type species for which an MLST scheme exists.  However nothing prevents you from adding other loci to its database.  In fact, `kcst` is not limited to MLST: the loci could equally well be resistance genes or other genotypic features.  Note however that k-mer mapping is optimal for 'crisp' matching, and won't perform as well when the subject sequences allow for many mismatches.
 
 
 ### How it works
 
-`kcst` uses the core functionality of `khc`.  `khc`, for _k-mer hit counter_ maps the k-mers from one or more query sequences on any number of subject sequences.  It tracks which locations on the subject sequences are hit by (i.e. exactly match) a k-mer from the query, and outputs for each subject sequence its coverage percentage.  In the case of MLST the subject sequences are the alleles of the MLST loci.  `kcst` collects the output of `khc` and uses it look up the best matching profile(s) in the MLST tables.
+`kcst` uses the core functionality of `khc`.  `khc`, for _k-mer hit counter_, maps the k-mers from one or more query sequences on any number of subject sequences.  It tracks which locations on the subject sequences are hit by (i.e. exactly match) a k-mer from the query, and outputs for each subject sequence its coverage percentage.  In the case of MLST the subject sequences are the alleles of the MLST loci.  `kcst` collects the output of `khc` and uses it look up the best matching MLST profile.
 
 
-### How come it is so fast
+### Why it is fast
 
 The reasons are both in the nature of the problem, and in the design choices for the implementation.
 
@@ -23,7 +23,7 @@ First off, note that k-mer mapping is based on 'crisp' matching: two k-mers are 
 
 Now, MLST, contrary to most other matching problems in genomics, is all about exact matching.  A genome is defined to have a specific ST only if the alleles at its MLST loci are _exact_ matches with the alleles in the MLST profile.  This means that we only need to check that every k-mer on the profile is hit by a k-mer from the query (under the proviso that smaller k-mer sizes tend to give more spurious hits), which is precisely what `khc` does.  This is not to say that `kcst` does not detect 'close-to-ST' situations (it does, as it has the coverage percentages for every MLST allele), just that it doesn't expend compute time looking for them.
 
-On the implementation side, `khc` approaches the theoretic optimum of having _O_(1) lookup time per kmer, and hence _O_(n) run time, _n_ being query size[^1].  It does this at the expense of memory consumption, which goes up _O_(4^k) with k-mer size, as `khc` uses a lookup table indexed by integer-encoded k-mers.[^2]  When k-size would cause excession of the configurable memory consumption limit (default: all physical memory minus 2GB), `khc` switches to an _O_(n⋅k) run time implementation (using a red-black tree).  K-mers are always encoded as integers (reversibly, no hashing), which means that the maximum k-mer size is 31 for current CPUs.
+On the implementation side, `khc` approaches the theoretic optimum of having _O_(1) lookup time per kmer, and hence _O_(n) run time, _n_ being query size[^1].  It does this at the expense of memory consumption, which goes up _O_(4^k) with k-mer size, as `khc` uses a lookup table indexed by integer-encoded k-mers.[^2]  When k-size would cause excession of the configurable memory consumption limit (default: all physical memory minus 2GB), `khc` switches to an _O_(n⋅k) run time implementation (using a red-black tree).  K-mers are always encoded as integers (reversibly, no hashing), which means that the maximum k-mer size is 31 for current-day CPUs.
 
 
 ### Where to get it
