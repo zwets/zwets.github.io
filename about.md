@@ -15,7 +15,7 @@ My wife and I use [zwets.com](http://zwets.com/) to blog about our life and work
 
 ### And who is io@zwets.it?
 
-My professional career started in academic research somewhere in the past millennium.  Then there was a twenty year stint in commercial IT (details on [LinkedIn](http://tz.linkedin.com/in/zwets) or in my [curriculum vitae](CV_Marco_van_Zwetselaar.pdf)).  Now I am back in research, thoroughly enjoying doing the bioinformatics for our genomics unit at KCRI.  Our main line of work over the past years has been bacterial whole genome sequencing, focusing on antibiotic resistance.  We are now expanding into viral sequencing, metagenomics (human and chimp gut microbiome), and targeted human and malaria sequencing.  .
+My professional career started in academic research somewhere in the past millennium.  Then there was a twenty year stint in commercial IT (details on [LinkedIn](http://tz.linkedin.com/in/zwets) or in my [curriculum vitae](CV_Marco_van_Zwetselaar.pdf)).  Now I am back in research, thoroughly enjoying doing the bioinformatics for our genomics unit at KCRI.  Our main line of work over the past years has been bacterial whole genome sequencing, focusing on antibiotic resistance.  We are now expanding into viral sequencing, metagenomics (human and chimp gut microbiome), and targeted human and malaria sequencing.
 
 #### Io is a programmer
 
@@ -23,7 +23,7 @@ I have worked in a variety of fields, but there is a prominent constant: **progr
 
 I must have typed my first line of BASIC around 1979, on a Philips P2000.  Then came Pascal and LISP in the 80s -- as well as an obscure DBase3 language which is all but lost in the haze.  I spent the 90/00s professionally cranking out mlocs of C, C++ and Java, with a painful intermezzo of VB+ASP, and some pleasant sidesteps into Prolog, Smalltalk and Erlang.  Also XSLT needs mention, the one bright light in the dark ages of XML.  Then there were Javascript, Ruby, and recreational excursions to the likes of Newspeak, Pure, Coq and Parallel Brainfuck.
 
-My current day to day languages are Bash/GNU, Python, R, and Haskell.[^2]  And some Scheme, as Guile is the specification language for [GNU/Guix](http://www.gnu.org/software/guix).
+My current day to day languages are Bash/GNU, Python, R, and C/C++, with side-projects in Haskell, Java, and Scheme/Guile (for [GNU/Guix](http://www.gnu.org/software/guix)).[^2]
 
 #### Why IO?
 
@@ -32,5 +32,5 @@ I started this site when I found out that I could conveniently host so-called "G
 ###### Footnotes
 
 [^1]: I remember the day the Internet Archive [made its existence known](http://web.archive.org/web/20011026003810/http://www.archive.org/wayback/press_kit/index.html).  We thought it was a joke but it had already spent 5 years archiving pages, resulting in the then [gargantuan volume](http://web.archive.org/web/20011202145626/http://www.waybackmachine.org/) of 10 billion pages, 100TB.  Apart from a fun stroll down memory lane, the [WaybackMachine](http://web.archive.org/) / [Internet Archive](http://www.archive.org/) provides the useful service of on-demand archiving of copies of web pages, so you can reliably cite them for later referral.
-[^2]: Note to self: write-up on the *not-so-pleasant* languages and platforms ... VB, DCOM, XSD, SOAP, ...
+[^2]: Note to self: write-up on the *not-so-pleasant* languages and platforms whose memories I'm staunchly repressing: CORBA, VB, DCOM, XSD, SOAP, ...
 
