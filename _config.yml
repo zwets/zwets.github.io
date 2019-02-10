@@ -5,6 +5,7 @@ description: "Marco van Zwetselaar's IT domain"
 #baseurl: ""
 url: "http://io.zwets.it"
 github_username:  zwets
+mastodon_username:  zwets
 TZ: Africa/Dar_es_Salaam
 exclude: ["Gemfile", "Gemfile.lock", "vendor", "README.md", "LICENSE", "CNAME", "new-post.sh"]
 #include: [".htaccess"] # default, because dotfiles otherwise ignored in generation
