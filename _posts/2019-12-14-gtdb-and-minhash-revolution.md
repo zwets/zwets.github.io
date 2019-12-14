@@ -10,11 +10,10 @@ revolution is happening at the confluence of two recent developments in
 microbial genomics and bioinformatics.
 
 The first is the advent of the [GTDB](https://gtdb.ecogenomic.org/), a
-new (but by no means novel) approach to bacterial taxonomic assignment.
-Boldy going where we didn't dare go before, 
-[Parks c.s.](https://dx.doi.org/10.1038/nbt.4229) throw off the shackles of
-pre-genomic microbiology in favour of taxonomic assignment based on degrees
-of genomic similarity.
+phylogenetically consistent bacterial and archaeal taxonomy.  Boldy going
+where we didn't go before, [Parks c.s.](https://dx.doi.org/10.1038/nbt.4229)
+throw off the shackles of pre-genomic microbiology in favour of taxonomic
+assignment based on degrees of genomic similarity.
 
 The second development is the rise of MinHash, a computational approach
 designed 20 years ago for [massive scale document comparison](https://dx.doi.org/10.1109/SEQUEN.1997.666900),
