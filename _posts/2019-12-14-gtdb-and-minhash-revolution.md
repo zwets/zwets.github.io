@@ -3,6 +3,7 @@ title: GTDB and MinHash - a little revolution
 layout: post
 excerpt: "Exciting times in microbial genomics and bioinformatics"
 published: true
+updated: 2019-12-17
 ---
 
 Being a bioinformatician at heart, I can't help but feel that a little
@@ -14,6 +15,9 @@ phylogenetically consistent bacterial and archaeal taxonomy.  Boldy going
 where we didn't go before, [Parks c.s.](https://dx.doi.org/10.1038/nbt.4229)
 throw off the shackles of pre-genomic microbiology in favour of taxonomic
 assignment based on degrees of genomic similarity.
+
+> *Update* I just pushed [gtdb-taxo](https://github.com/zwets/gtdb-taxo),
+> a command-line search tool and browser for the GTDB taxonomy to GitHub.
 
 The second development is the rise of MinHash, a computational approach
 designed 20 years ago for [massive scale document comparison](https://dx.doi.org/10.1109/SEQUEN.1997.666900),
