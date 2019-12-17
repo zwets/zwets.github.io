@@ -17,7 +17,7 @@ throw off the shackles of pre-genomic microbiology in favour of taxonomic
 assignment based on degrees of genomic similarity.
 
 > *Update* I just pushed [gtdb-taxo](https://github.com/zwets/gtdb-taxo),
-> a command-line search tool and browser for the GTDB taxonomy to GitHub.
+> a command-line search tool and browser for the GTDB taxonomy, to GitHub.
 
 The second development is the rise of MinHash, a computational approach
 designed 20 years ago for [massive scale document comparison](https://dx.doi.org/10.1109/SEQUEN.1997.666900),
