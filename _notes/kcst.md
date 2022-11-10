@@ -30,7 +30,7 @@ On the implementation side, `khc` approaches the theoretic optimum of having _O_
 
 ### Where to get it
 
-The code for `kcst` is [hosted on GitHub](https://github.com/zwets/kcst).  When you use it in your research, kindly cite <http://io.zwets.it/kcst>.
+The code for `kcst` is [hosted on GitHub](https://github.com/zwets/kcst).  When you use it in your research, kindly cite <https://io.zwets.it/kcst>.
 
 
 ##### Footnotes

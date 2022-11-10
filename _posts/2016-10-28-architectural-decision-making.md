@@ -97,7 +97,7 @@ The above is not just theory.  I was positively surprised by its results
 (and the fun had and insights gained by all participants) when I first
 trialed it at a client where I was consulting.  I later repeated it and
 refined the way the workshops worked, but then 
-[left architecture consulting for genomics](http://io.zwets.it/about/). 
+[left architecture consulting for genomics](https://io.zwets.it/about/). 
 I was recently reminded that I should document this _somewhere_.  Hence
 this post.
 
