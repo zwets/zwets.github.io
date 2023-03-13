@@ -14,8 +14,8 @@ based in The Netherlands, but open for bioinformatics work around the world.
 Despite some colourful suggestions for company names by friends and colleagues,
 I've gone with pragmatic: Zwets IT (<http://zwets.it>).
 
-It was a close call though for _The Flying Bioinformatician_, _Nomadic Bioinformatics_,
-and especially _«Bio-informaticien sans Frontières»_. :-)
+It was a close call for _The Flying Bioinformatician_, _Nomadic Bioinformatics_,
+and, especially, _«Bio-informaticien sans Frontières»_.
 
 More about me [here](https://io.zwets.it/about), in [my CV](https://io.zwets.it/cv.pdf),
 on [LinkedIn](https://www.linkedin.com/in/zwets/), or reach out at io@zwets.it.
