@@ -19,7 +19,7 @@ I then moved back into research, and have since been immersed in genomics and bi
 
 After ten years building from scratch [KCRI](https://www.kcri.ac.tz)'s bioinformatics unit,
 I moved on in March 2023 to continue as an [independent contractor](http://io.zwets.it/2023/03/01/bioinformatician-without-borders)
-with my own company, [Zwets IT](https://zwets.it).  Read my [full CV here](cv.pdf).
+with my own company, [Zwets IT](https://zwets.it).  Read [my CV here](cv.pdf).
 
 #### Bioinformatics
 
@@ -30,7 +30,7 @@ teaching basic and advanced bioinformatics courses, and performing countless ana
 Tanzania's first and only [published SARS-CoV-2 genomes](https://doi.org/10.3389/fmed.2022.1034682).
 
 I hope to continue in this line of work, building local bioinformatics capacity at other sites in Africa.
-I'm also open to other gigs.
+I'm open to other gigs.
 
 #### Programming
 
@@ -42,24 +42,26 @@ I then rode the third AI wave of the early 90s, picking up Prolog and Scheme, an
 the wake of the newborn field "Neural Networks".  Theoretical CS introduced me to the austere beauty of the lambda
 calculus and combinatory logic, and cemented my love for functional languages.
 
-Haskell is still my favourite programming language, by a large margin.  My wish is that R dies and reincarnates
-inside Haskell.  My tips for recreational PL excursions: Erlang, Newspeak, Pure, and don't miss Parallel Brainfuck.
+Haskell still is my favourite programming language, by a large margin.  My wish is that R dies and reincarnates
+in Haskell.  Recommended recreational programming language excursions: Erlang, Newspeak, Pure, and don't miss
+Parallel Brainfuck.
 
 #### Ah, work
 
-When ~~play time~~ university was over, after building one of the earliest web sites in The Netherlands (running off
-my personal SGI Indy at RIVM, and featuring my homebrew "ZWebcam"), I spent the 90s and 00s professionally cranking
-out uncountable lines of C, C++ and Java.
+When ~~play time~~ university was over, after building one of the earliest .nl web sites -- running off
+my personal SGI Indigo at RIVM, and featuring my homebrew "ZWebcam" -- I spent the 90s and 00s professionally
+cranking out uncountable lines of C, C++ and Java.
 
 Over the years my work shifted to consulting and architecture (see [my CV](cv.pdf)), but even as an Enterprise Architect
-I never entirely gave up coding.  My motto at Atos Origin: _"I don't want to become a PowerPoint architect"_.
+I refused to give up coding.  My motto at Atos Origin: _"As long as I don't become a PowerPoint architect"_.
 
-In 2012 I moved from consulting back to research and, as a bioinfomatician, very much back to hands-on work.
+In 2012 I moved from consulting back to research, and, as a bioinfomatician, very much back to hands-on work.
 My current day-to-day languages are Bash/GNU, Python, C/C++ and (reluctantly) R.  I'm open to programming assignments,
-provided they aren't'front-end and can be done on Linux with open source tools.
+provided they aren't front-end and can be done on Linux with open source tools.
 
 ##### Footnote: why **io**@zwets.it?
 
-I started this site when GitHub enabled personal domains for github.io pages.  I already owned zwets.it, the <strong>io</strong> stuck,
-and so it became io.zwets.it.  Apart from the geeky pun, ask any Italian why I/O makes sense.
+I started this site when GitHub enabled personal domains for github.io pages.  I already owned zwets.it,
+the <strong>io</strong> stuck, and so it became io.zwets.it.  Apart from the geeky pun, ask any Italian
+why I/O makes sense.
 
