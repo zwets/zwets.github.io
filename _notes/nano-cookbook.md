@@ -1,6 +1,6 @@
 ---
-title: Nano Cookbook - Course materials for 2023-05 SeqAfrica/FAO Nanopore workshop
-excerpt: "Notebook with instructions for the May 2023 workshop at NMIMR Ghana: _Strengthening Microbial Risk Assessment for Food Safety and Antimicrobial Resistance Using Portable DNA Sequencing Technology_."
+title: Nano Cookbook - course materials
+excerpt: "Notebook with instructions for May 2023 workshop 'Strengthening Microbial Risk Assessment for Food Safety and Antimicrobial Resistance Using Portable DNA Sequencing Technology'
 layout: page
 updated: 2023-05-21
 ---
@@ -9,7 +9,7 @@ This page collects instructions for the May 2023 joint FAO/SeqAfrica workshop _"
 
 > These instructions were originally intended as the installation and user manual for the FAO-provided laptop and MinION sequencer.
 > As timely delivery became increasingly uncertain, the instructions were broken into bite-size bits that could be assembled in various ways.
-> There is a [road map](assets/NanoCourseRoadmap1.pdf) that shows how the bits are related.
+> Use the road map below to find your way back when you're lost `;)`.
 
 ## Road Map
 
