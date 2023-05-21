@@ -95,20 +95,50 @@ The `screen` (or `tmux`) utility 'multiplexes' multiple shells in a single termi
 
 ## Sequencing: MinKNOW
 
+General Tips on ONT software:
+
+ * New releases (and bugs, and changes!) are announced through the [ONT Community Site](https://nanoporetech.com/community)
+ * Make sure you have a login there (linked to your institute's account with ONT) and _check in regularly_
+ * ONT have an Ubuntu repository, which makes installing & updating easy, but it's ... a work in progress and not without glitches
+
+### Adding the ONT repositories
+
+Add the ONT repository to the APT sources
+
+    # Note this says 'focal' (= 20.04) but it actually supports 'jammy' (22.04)
+    echo 'deb http://cdn.oxfordnanoportal.com/apt focal-stable non-free' | sudo tee /etc/apt/sources.list.d/ont-repo.list
+
+Add ONT's GPG package signing key APT's trusted keys:
+
+    wget -O - https://mirror.oxfordnanoportal.com/apt/ont-repo.pub | sudo tee /etc/apt/trusted.gpg.d/ont-repo.asc
+
+Update APT's cache of available software:
+
+    sudo apt update
+
 ### Installing MinKNOW
 
-Adding the ONT Ubuntu repositories:
+MinKNOW is the GUI tool to set up and perform MinION sequencing runs.  Installing MinKNOW pulls
+the Guppy basecaller (see below) and other software as well.
 
-```bash
+The package to install, once you have [added the ONT repositories](#adding-the-ont-repositories), is (as of last week):
 
+    # On machines WITH an NVidia GPU (see the Guppy documentation below)
+    sudo apt install ont-standalone-minknow-release-gpu
 
-```
+    # On machines without an NVidia GPU
+    sudo apt install ont-standalone-minknow-release
+
+**IMPORTANT** if you insta
+
 
 ### Running MinKNOW
 
 
 ## Run to Reads
 
+To convert the FAST5 from the run 
+MinKNOW requires a GPU (Graphics Processing Unit) for its basecall
 ### Basecalling
 
 ### Demultiplexing
@@ -145,4 +175,81 @@ We won't get
 
 ## Reads to Analysis
 
+
+
+## Installation Dos and Donts
+
+ * *Always* prefer `sudo apt install` 
+
+   * Try the command you need in the command-line, Ubuntu will suggest the package
+   * Or use `apt search ...`
+   * Then just `sudo apt install` the package
+   * Deinstallation is `sudo apt remove ...` (or `purge`)
+
+ * If not in Ubuntu, but available in a Debian/Ubuntu repository (e.g. ONT software, R CRAN):
+
+   * Check that their target release is (close to) your current Ubuntu Release (22.04 = `jammy`)
+   * Add the repository URL in `/etc/apt/sources.list.d/...`
+   * `sudo apt update`
+   * `sudo apt install` as above
+   * Be aware that their software _may_ conflict with Ubuntu software, miss dependencies, etc
+
+ * Otherwise, if precompiled binary available (e.g. `polypolish`):
+
+   * Download and drop in your `~/bin`
+   * Or drop (as root) in `/usr/local/bin` 
+   * But note that both override `/usr/bin` (i.e. a possible later `apt install`)
+   * Use `which ...` or `command -v ...` to find out which would be called
+   * Deinstallation is `rm ~/bin/...`
+
+ * Otherwise, if sources but single binary that can be easily compiled (e.g. `kma`, `flye`):
+
+   * Git clone its repository: `git clone ...`
+   * `cd kma && make`
+   * Then either symlink the resulting binary from `~/bin`, or continue as for precompiled binary
+
+ * Otherwise, if the package is "Python installable" (`pip`, `pypi`, `python setup.py`, etc):
+
+   * If it has an `environment.yaml` (e.g. `pangolin`), use that to do everything
+   * Else always install in a Conda environment of its own
+     * Setup Conda (see below) 
+     * Create new environment with requirements pre-installed: `conda create -n MYENV PKG1 PKG2 ...`
+     * Requirements usually listed in the `README`, in `requirements.txt` or `setup.py`
+   * Then `conda activate MYEMV`
+   * Only then `python setup.py install` (or `pip install`, etc)
+
+ * Fall back to Docker (or Conda, below):
+
+   * If a prebuilt Docker image is available: `docker pull ...`
+   * If a Dockerfile is available: `docker build ...`
+   * Avoid running Docker containers as `root` (when they produce output on your filesystem):
+
+        docker run --rm -u $(id -u):$(id -g) IMAGE [ARGS]
+
+   * Running an Ubuntu shell in a Docker container
+
+        docker pull ubuntu:22.04
+        docker run -ti --rm ubuntu:22.04 bash -l   # you will be root (but locked inside)
+
+ * Fall back to Conda:
+
+   * Install `miniconda` (or `anaconda`) according to [their instructions](https://docs.conda.io/en/latest/miniconda.html)
+   * Install `mamba` in the Conda `base` environment, according to [their instructions](https://mamba.readthedocs.io/en/latest/installation.html)
+   * Use `mamba` whenever you would use `conda` (much faster)
+   * Disable auto-activation of the Conda base environment
+
+        echo 'auto_activate_base: false' >> ~/.condarc
+
+   * **Never** install things in Conda `base`, always in newly created environments
+
+        mamba create -n MYENV [PACKAGES TO INSTALL]
+        mamba activate ENVNAME
+
+   * Installing additional Python packages in an existing Conda env
+
+        mamba activate ENVNAME
+        mamba install ...
+        or: pip, pypi, setup.py, easy_install etc
+
+ * At all times avoid `sudo make install` and (even more) `wget https://get-something.org | sudo sh -`
 
