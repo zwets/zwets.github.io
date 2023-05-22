@@ -99,7 +99,7 @@ General Tips on ONT software:
 
  * New releases (and bugs, and changes!) are announced through the [ONT Community Site](https://nanoporetech.com/community)
  * Make sure you have a login there (linked to your institute's account with ONT) and _check in regularly_
-   **Tip:** the _Updates_ link if the left sidebar shows the latest release news
+   * **Tip:** the _Updates_ link in the left sidebar shows the latest release news
  * ONT have an Ubuntu repository, which makes installing & updating easy, but it's ... a work in progress and not without glitches
 
 ### Adding the ONT repositories
@@ -109,7 +109,7 @@ Add the ONT repository to the APT sources
     # Note this says 'focal' (= 20.04) but it actually supports 'jammy' (22.04)
     echo 'deb http://cdn.oxfordnanoportal.com/apt focal-stable non-free' | sudo tee /etc/apt/sources.list.d/ont-repo.list
 
-Add ONT's GPG package signing key APT's trusted keys:
+Add ONT's GPG package signing key to APT's trusted keys:
 
     wget -O - https://mirror.oxfordnanoportal.com/apt/ont-repo.pub | sudo tee /etc/apt/trusted.gpg.d/ont-repo.asc
 
@@ -119,7 +119,7 @@ Update APT's cache of available software:
 
 ### Installing MinKNOW
 
-MinKNOW is the GUI tool to set up and perform MinION sequencing runs.  Installing MinKNOW pulls
+MinKNOW is the GUI tool to set up and perform MinION sequencing runs.  Installing MinKNOW pulls in
 the Guppy basecaller (see below) and other software as well.
 
 The package to install, once you have [added the ONT repositories](#adding-the-ont-repositories), is (as of last week):
@@ -130,18 +130,19 @@ The package to install, once you have [added the ONT repositories](#adding-the-o
     # On machines without an NVidia GPU
     sudo apt install ont-standalone-minknow-release
 
-The installation of MinKNOW, will also install and enable the Guppy basecall server (`guppyd`).
-If `guppyd` fails to start, it will keep retrying every 10s and fill `/var/log/guppy` with log files.
+The installation of MinKNOW also installs _and enables_ the Guppy basecall server (`guppyd`).
+If `guppyd` fails to start, it keeps retrying every 10s and will rapidly fill `/var/log/guppy` with log files.
 This issue has been reported to ONT.
 
-Unless you want to basecall during the sequencing run (likely not, see discussing on models below),
+Unless you want to basecall during the sequencing run (likely not, see discussion on models below),
 better stop and disable guppyd:
 
     sudo systemctl stop guppyd
     sudo systemctl disable guppyd
 
-**IMPORTANT** you must repeat this after every MinKNOW upgrade, as this re-enables the `guppyd` service.
-This will hopefully also be fixed by ONT.
+**IMPORTANT** you must repeat this after every MinKNOW upgrade, as upgrades re-enable the `guppyd` service.
+This will hopefully also be fixed by ONT, as it goes against standard Ubuntu practice (don't enable things
+the user has turned off).
 
 
 ## Run QC
@@ -154,7 +155,7 @@ important data and graphs to `report_{RUN_ID}.pdf` in the run output directory.
 This PDF gives the primary Run QC, and is well worth examining before further steps.  The
 `final_summary_{RUN_ID}.txt` has a convenient text format summary of the run parameters and outputs.
 
-The run output directories has various other (very detailed) diagnostic outputs.
+The run output directory has various other (very detailed) diagnostic outputs.
 
 
 
@@ -192,7 +193,9 @@ This is the basic invocation:
 Here, `--disable_pings` disables telemetry (so Guppy can be run without internet connection),
 `-x auto` automatically selects a GPU, `$IN_DIR` and `$OUT_DIR` point at the fast5 input
 and fastq output directories respectively, and `--recursive` means it should search for fast5
-down all subdirectories of `IN_DIR`.
+files down all subdirectories of `IN_DIR`.
+
+> **TODO** what is the command when the input is not fast5 but pod5 format?
 
 `$GUPPY_CONFIG` is the name of a configuration file (relative to `/opt/ont/guppy/data`) that
 matches the sequencing chemistry and flowcell, sequencer model (MinION, Mk1C, PromethION),
@@ -200,7 +203,7 @@ and desired basecalling model.
 
 This command lists the available configurations:
 
-    guppy_basecaller --print_workflows   # be patient
+    guppy_basecaller --print_workflows   # time to go grab a coffee
 
 Basecalling models have been trained (as in: Machine Learning) to attain different levels of accuracy:
 
@@ -213,9 +216,9 @@ Additionally, there are model variants that take into account methylation (modif
 Guppy basecaller has many more options.  You may want to use `--do_read_splitting` to
 make it detect barcodes in the middle of reads.
 
-See `guppy_basecaller --help` for all options, and the
+`guppy_basecaller --help` briefly summarizes all options, but you'll need to visit the
 [Guppy Protocol](https://community.nanoporetech.com/protocols/Guppy-protocol/) 
-(behind login on the Nanopore Community Site) for details.
+(behind login on the Nanopore Community Site) to read up on details.
 
 ### Basecalling with Dorado
 
@@ -228,19 +231,21 @@ not yet stable.  Its development is
 The **fastq** files from `guppy_basecaller` contain all reads, irrespective of barcode.  The
 next step then is to demultiplex.  This is done by `guppy_barcoder`:
 
-    guuppy_barcoder -t $THREADS --disable_pings -x auto \
+    # Demux using all processors (nproc) and the GPU
+    guppy_barcoder -t $(nproc) --disable_pings -x auto \
         --barcode_kits "$BC_KITS" --enable_trim_barcodes \
         -i "$IN_DIR" --recursive \
         -s "$OUT_DIR"
 
-Most options match those for `guppy_basecaller`.  Option `$BC_KITS` needs a comma-separated
-list of the barcode kit(s) that were used.  The _run report_ and _final summary_ (see [Run QC](#run-qc))
-list these.
+Most options match those described for `guppy_basecaller` above.  Option `$BC_KITS` needs
+a comma-separated list of the barcode kit(s) that were used.  The _run report_ and _final summary_
+(see [Run QC](#run-qc)) will tell you these.
 
 > **Hot from the press:** the latest `guppy_barcoder` (released last week) can take a sample
-> sheet that lists the barcodes that were actually used in the run.
+> sheet that lists the barcodes that were actually used in the run. @TODO@: which option?
 
-> **TIP** read up on latest features in the _Updates_ section on the Nanopore Community Site.
+> **TIP** read up on latest Guppy features in the _Updates_ section on the Nanopore Community Site,
+> and in the aforementioned "Guppy Protocol" document.
 
 ### Joining FastQ
 
@@ -257,17 +262,20 @@ You can also use the "Merge FASTQ" function in the LPF (see below) to do this in
 
 ## Reads QC
 
+We are now at the stage where we have one reads file per sample, and ready to do QC on those.
+
 ### Metrics
 
 The go-to tool for reads QC is still `FastQC`, even if it shows its age (and crashes on large
-numbers of long reads).  I'll be happy to replace it by a better alternative.
+numbers of long reads).  I'll be happy to replace it by a better alternative, suggestions are
+welcome.
 
 Installing FastQC
 
     sudo apt install fastqc
 
-Possibly MultiQC includes reads metrics now?  At any rate, highly recommended to bring together
-QC outputs from multiple tools into a single report:
+I have not checked, but conceivably MultiQC does reads metrics now?  At any rate, highly
+recommended to bring together QC outputs from multiple tools into a single report:
 
     sudo apt install multiqc
 
@@ -279,13 +287,11 @@ Multiple ways in which a sequenced isolate can be contaminated:
 
  * Foreign organism (e.g. host DNA, mixed culture)
  * Same organism (cross-sample contamination)
- * Lab vectors (barcodes, adapters, etc., see NCBI _UniVec_ and _UniVec\_Core_)
+ * Lab vectors (barcodes, adapters, etc.; see the NCBI _UniVec_ database)
 
 @TODO@ include a tool for doing contamination analysis on reads, and/or rely on contamination
-detection in assemblies.
-
-HPC tools (CheckM, FastQScreen) are too heavyweight.  It should be possible to create a rapid
-(KMA-based) screening application.
+detection in assemblies.  HPC tools (CheckM, FastQScreen) are too heavyweight.  It should be
+possible to create a rapid (KMA-based) screening application.  Addition for LPF?
 
 
 ## Reads to Genome Assembly
@@ -321,22 +327,19 @@ Installation ideally from BioConda:
 
     conda create -n medaka -c conda-forge -c bioconda medaka
 
-but this has been problematic recently, and versions have been lagging considerably behind releases.
+but this has been problematic recently, with versions lagging behind Medaka releases.
 
 Building from source _in a Conda environment_ (see the Chapter on "Installation Do's and Donts" below)
 is probably your best option.
 
 Medaka comes in a CPU and GPU version.  The CPU version has acceptable runtime for moderate volumes
-of reads.
-
-Running Medaka on all CPUs:
+of reads.  Running Medaka on all CPUs:
 
     conda activate medaka
     medaka_consensus -i INPUT_FQ -d ASSEMBLY_FA -o OUTDIR -m MEDAKA_MODEL -t $(nproc)
 
 Where `MEDAKA_MODEL` should be chosen as closely as possible to the model used for `guppy_basecaller`.
 `medaka tools list_models` lists the available models.
-
 
 ### Hybrid Assembly: Polypolish
 
@@ -347,7 +350,8 @@ short reads.
 Installation of polypolish: download the pre-compiled binary and insert\_filter script from
 [its GitHub site](https://github.com/rrwick/Polypolish/releases) and drop these in your `~/bin`.
 
-Running polypolish:
+Polypolish is run on a pair of SAM files that have the mappings of the reads on the genome.
+The mapping can be produced with `bwa` (apt installable).  The full workflow then is:
 
     bwa index $DRAFT_FNA && \
     bwa mem -t $(nproc) -a $DRAFT_FNA $READS1_FQ > $ALN1_SAM && \
@@ -356,11 +360,17 @@ Running polypolish:
     polypolish $DRAFT_FNA $FLT1_SAM $FLT2_SAM \
     > $OUTPUT_FNA
 
+## Assembly QC
+
+Quast is the standard tool here. @TODO@ add installation and invocation.
+
+Once FastQC and Quast have both run, use MultiQC to integrate their output into one HTML report.
+
 
 ## Reads to Analysis Results: LPF
 
 This is the tool we were/are going to install on the FAO/SeqAfrica laptops together,
-but clearly this hinges on the laptop actually being there. :-)
+but clearly this hinged on the laptop actually being there. :-)
 
 Installation is straightforward, following the instructions linked from
 the [GitHub page](https://github.com/MBHallgren/LPF), found [here](https://mbhallgren.github.io/LPF_mkdocs/).
@@ -368,82 +378,92 @@ the [GitHub page](https://github.com/MBHallgren/LPF), found [here](https://mbhal
 However, the size of the reference databases is such that a guided walkthrough
 (with a few special steps) would have been ideal.
 
-We will go through at a demo, and plan the best approach to do the installation later.
+We will go through at a demo, and look at what the best approach is to do the installation later.
 
 
 ## Installation Do's and Donts
 
- * *Always* prefer `sudo apt install` 
+This section tried to give a prioritised overview of the "do's and don'ts" of installing
+bioinformatics (or other) software on an Ubuntu system.
 
-   * Try the command you need in the command-line, Ubuntu will suggest the package
-   * Or use `apt search ...`
-   * Then just `sudo apt install` the package
-   * Deinstallation is `sudo apt remove ...` (or `purge`)
+### *Always* prefer `sudo apt install` 
 
- * If not in Ubuntu, but available in a Debian/Ubuntu repository (e.g. ONT software, R CRAN):
+ * Try the command you need in the command-line, Ubuntu will suggest the package
+ * Or use `apt search ...`
+ * Then just `sudo apt install` the package
+ * Deinstallation is `sudo apt remove ...` (or `purge`)
 
-   * Check that their target release is (close to) your current Ubuntu Release (22.04 = `jammy`)
-   * Add the repository URL in `/etc/apt/sources.list.d/...`
-   * `sudo apt update`
-   * `sudo apt install` as above
-   * Be aware that their software _may_ conflict with Ubuntu software, miss dependencies, etc
+### If not in Ubuntu, but available in a Debian/Ubuntu repository
 
- * Otherwise, if precompiled binary available (e.g. `polypolish`):
+ * Examples: ONT software, R CRAN packages:
+ * Check that their target release is (close to) your current Ubuntu Release (22.04 = `jammy`)
+ * Add the repository URL in `/etc/apt/sources.list.d/...`
+ * `sudo apt update`
+ * `sudo apt install` as above
+ * Be aware that their software _may_ conflict with Ubuntu software, miss dependencies, etc
 
-   * Download and drop in your `~/bin`
-   * Or drop (as root) in `/usr/local/bin` 
-   * But note that both override `/usr/bin` (i.e. a possible later `apt install`)
-   * Use `which ...` or `command -v ...` to find out which would be called
-   * Deinstallation is `rm ~/bin/...`
+### Otherwise, if precompiled binary available
 
- * Otherwise, if sources but single binary that can be easily compiled (e.g. `kma`, `flye`):
+ * Example: `polypolish`
+ * Download and drop in your `~/bin`
+ * Or drop (as root) in `/usr/local/bin` 
+ * But note that both override `/usr/bin` (i.e. a possible later `apt install`)
+ * Use `which ...` or `command -v ...` to find out which would be called
+ * Deinstallation is `rm ~/bin/...`
 
-   * Git clone its repository: `git clone ...`
-   * `cd kma && make`
-   * Then either symlink the resulting binary from `~/bin`, or continue as for precompiled binary
+### Otherwise, if single binary that can be easily compiled
 
- * Otherwise, if the package is "Python installable" (`pip`, `pypi`, `python setup.py`, etc):
+ * Examples: `kma`, `flye`, `fastq-utils`:
+ * Git clone its repository: `git clone ...`
+ * `cd kma && make`
+ * Then either symlink the resulting binary from `~/bin`, or continue as for precompiled binary
+ 
+### Otherwise, if the package is "Python installable"
 
-   * If it has an `environment.yaml` (e.g. `pangolin`), use that to do everything
-   * Else always install in a Conda environment of its own
-     * Setup Conda (see below) 
-     * Create new environment with requirements pre-installed: `conda create -n MYENV PKG1 PKG2 ...`
-     * Requirements usually listed in the `README`, in `requirements.txt` or `setup.py`
-   * Then `conda activate MYEMV`
-   * Only then `python setup.py install` (or `pip install`, etc)
+ * I.e. with `pip`, `pypi`, `python setup.py`, `easy_install`, etc
+ * If it has an `environment.yaml` (e.g. `pangolin`), use that to do everything
+ * Else always install in a Conda environment of its own
+   * Setup Conda (see below) 
+   * Create new environment with requirements pre-installed: `conda create -n MYENV PKG1 PKG2 ...`
+   * Requirements usually listed in the `README`, in `requirements.txt` or `setup.py`
+ * Then `conda activate MYEMV`
+ * Only then `python setup.py install` (or `pip install`, etc)
 
- * Fall back to Docker (or Conda, below):
+### Containerised in Docker
 
-   * If a prebuilt Docker image is available: `docker pull ...`
-   * If a Dockerfile is available: `docker build ...`
-   * Avoid running Docker containers as `root` (when they produce output on your filesystem):
+ * If a prebuilt Docker image is available: `docker pull ...`
+ * If a Dockerfile is available: `docker build ...`
+ * Avoid running Docker containers as `root` (when they produce output on your filesystem):
 
         docker run --rm -u $(id -u):$(id -g) IMAGE [ARGS]
 
-   * Running an Ubuntu shell in a Docker container
+ * Running an Ubuntu shell in a Docker container
 
         docker pull ubuntu:22.04
         docker run -ti --rm ubuntu:22.04 bash -l   # you will be root (but locked inside)
 
- * Fall back to Conda:
+### Semi-isolated in Conda:
 
-   * Install `miniconda` (or `anaconda`) according to [their instructions](https://docs.conda.io/en/latest/miniconda.html)
-   * Install `mamba` in the Conda `base` environment, according to [their instructions](https://mamba.readthedocs.io/en/latest/installation.html)
-   * Use `mamba` whenever you would use `conda` (much faster)
-   * Disable auto-activation of the Conda base environment
+ * Install `miniconda` (or `anaconda`) according to [their instructions](https://docs.conda.io/en/latest/miniconda.html)
+ * Install `mamba` in the Conda `base` environment, according to [their instructions](https://mamba.readthedocs.io/en/latest/installation.html)
+ * Use `mamba` whenever you would use `conda` (much faster)
+ * Disable auto-activation of the Conda base environment
 
         echo 'auto_activate_base: false' >> ~/.condarc
 
-   * **Never** install things in Conda `base`, always in newly created environments
+ * **Never** install things in Conda `base`, always in newly created environments
 
         mamba create -n MYENV [PACKAGES TO INSTALL]
         mamba activate ENVNAME
 
-   * Installing additional Python packages in an existing Conda env
+ * Installing additional Python packages in an existing Conda env
 
         mamba activate ENVNAME
         mamba install ...
         or: pip, pypi, setup.py, easy_install etc
 
- * At all times avoid `sudo make install` and (even more) `wget https://get-something.org | sudo sh -`
+### At all times avoid
+
+ * Don't `sudo make install`
+ * Don't even more: `curl https://get-something.org | sudo sh -`
 
