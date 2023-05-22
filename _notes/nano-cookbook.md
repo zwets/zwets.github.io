@@ -99,6 +99,7 @@ General Tips on ONT software:
 
  * New releases (and bugs, and changes!) are announced through the [ONT Community Site](https://nanoporetech.com/community)
  * Make sure you have a login there (linked to your institute's account with ONT) and _check in regularly_
+   **Tip:** the _Updates_ link if the left sidebar shows the latest release news
  * ONT have an Ubuntu repository, which makes installing & updating easy, but it's ... a work in progress and not without glitches
 
 ### Adding the ONT repositories
@@ -129,55 +130,248 @@ The package to install, once you have [added the ONT repositories](#adding-the-o
     # On machines without an NVidia GPU
     sudo apt install ont-standalone-minknow-release
 
-**IMPORTANT** if you insta
+The installation of MinKNOW, will also install and enable the Guppy basecall server (`guppyd`).
+If `guppyd` fails to start, it will keep retrying every 10s and fill `/var/log/guppy` with log files.
+This issue has been reported to ONT.
+
+Unless you want to basecall during the sequencing run (likely not, see discussing on models below),
+better stop and disable guppyd:
+
+    sudo systemctl stop guppyd
+    sudo systemctl disable guppyd
+
+**IMPORTANT** you must repeat this after every MinKNOW upgrade, as this re-enables the `guppyd` service.
+This will hopefully also be fixed by ONT.
 
 
-### Running MinKNOW
+## Run QC
+
+MinKNOW stores its run output under `/var/lib/minknow/data`.
+
+During the run, MinKNOW shows plenty of information on the progress of the run.  It copies the
+important data and graphs to `report_{RUN_ID}.pdf` in the run output directory.
+
+This PDF gives the primary Run QC, and is well worth examining before further steps.  The
+`final_summary_{RUN_ID}.txt` has a convenient text format summary of the run parameters and outputs.
+
+The run output directories has various other (very detailed) diagnostic outputs.
+
 
 
 ## Run to Reads
 
-To convert the FAST5 from the run 
-MinKNOW requires a GPU (Graphics Processing Unit) for its basecall
-### Basecalling
+MinKNOW produces **fast5** files that record the electromagnetic "squiggles" of the nucleotides going through the pores.
+
+The **fast5** format will be replaced by the **pod5** format (already default in latest MinKNOW).
+
+### Installing Guppy
+
+If you installed MinKNOW as above, then Guppy has also been installed.  To install Guppy
+'standalone', i.e. on a system without MinKNOW:
+
+    sudo apt install ont-guppy
+
+Guppy requires an NVidia GPU (there is `ont-guppy-cpu` for systems without GPU, but this
+is _very_ slow, and not feasible for HA or higher models).
+
+To install the NVidia driver, generally this works:
+
+    sudo nvidia-detector   # This lists the required driver version: XYZ
+    sudo apt install nvidia-headless-XYZ
+
+### Basecalling with Guppy
+
+Basecalling translates fast5/pod5 files to the "universal" **fastq** format, and is done with `guppy_basecaller`.
+This is the basic invocation:
+
+    guppy_basecaller --disable_pings -x auto \
+        -c "$GUPPY_CONFIG" \
+        -i "$IN_DIR" --recursive \
+        -s "$OUT_DIR"
+
+Here, `--disable_pings` disables telemetry (so Guppy can be run without internet connection),
+`-x auto` automatically selects a GPU, `$IN_DIR` and `$OUT_DIR` point at the fast5 input
+and fastq output directories respectively, and `--recursive` means it should search for fast5
+down all subdirectories of `IN_DIR`.
+
+`$GUPPY_CONFIG` is the name of a configuration file (relative to `/opt/ont/guppy/data`) that
+matches the sequencing chemistry and flowcell, sequencer model (MinION, Mk1C, PromethION),
+and desired basecalling model.
+
+This command lists the available configurations:
+
+    guppy_basecaller --print_workflows   # be patient
+
+Basecalling models have been trained (as in: Machine Learning) to attain different levels of accuracy:
+
+ * `fast` for basecalling during the sequencing run only, close to real-time but reduced accuracy
+ * `hac` (High ACcuracy) on your laptop, use this for most purposes
+ * `sup` (SUPer-high accuracy), highest accuracy, at the cost of very long runtime
+
+Additionally, there are model variants that take into account methylation (modified bases).
+
+Guppy basecaller has many more options.  You may want to use `--do_read_splitting` to
+make it detect barcodes in the middle of reads.
+
+See `guppy_basecaller --help` for all options, and the
+[Guppy Protocol](https://community.nanoporetech.com/protocols/Guppy-protocol/) 
+(behind login on the Nanopore Community Site) for details.
+
+### Basecalling with Dorado
+
+_Dorado_ is the intended better and faster successor to Guppy.  It is available, but
+not yet stable.  Its development is
+[public on GitHub](https://github.com/nanoporetech/dorado).
 
 ### Demultiplexing
 
+The **fastq** files from `guppy_basecaller` contain all reads, irrespective of barcode.  The
+next step then is to demultiplex.  This is done by `guppy_barcoder`:
+
+    guuppy_barcoder -t $THREADS --disable_pings -x auto \
+        --barcode_kits "$BC_KITS" --enable_trim_barcodes \
+        -i "$IN_DIR" --recursive \
+        -s "$OUT_DIR"
+
+Most options match those for `guppy_basecaller`.  Option `$BC_KITS` needs a comma-separated
+list of the barcode kit(s) that were used.  The _run report_ and _final summary_ (see [Run QC](#run-qc))
+list these.
+
+> **Hot from the press:** the latest `guppy_barcoder` (released last week) can take a sample
+> sheet that lists the barcodes that were actually used in the run.
+
+> **TIP** read up on latest features in the _Updates_ section on the Nanopore Community Site.
+
 ### Joining FastQ
+
+Guppy barcoder writes demultiplexed reads to multiple FASTQ files per barcode, each having
+(normally) 4000 reads.  You'll want to join these together into a single file per barcode.
+
+Here is the typical Linux "pipes and filters" way to do this:
+
+    # In a directory with a bunch of fastq.gz files, modify to your situation
+    gunzip -c *.fastq.gz | gzip -c >joined.fastq.gz
+
+You can also use the "Merge FASTQ" function in the LPF (see below) to do this in a GUI.
 
 
 ## Reads QC
 
 ### Metrics
 
-The go-to tool for reads QC is `FastQC`.
+The go-to tool for reads QC is still `FastQC`, even if it shows its age (and crashes on large
+numbers of long reads).  I'll be happy to replace it by a better alternative.
 
-FastQC is showing its age
+Installing FastQC
+
+    sudo apt install fastqc
+
+Possibly MultiQC includes reads metrics now?  At any rate, highly recommended to bring together
+QC outputs from multiple tools into a single report:
+
+    sudo apt install multiqc
+
+Running FastQC and MultiQC is well documented in their `man` pages.
 
 ### Contamination
 
+Multiple ways in which a sequenced isolate can be contaminated:
+
+ * Foreign organism (e.g. host DNA, mixed culture)
+ * Same organism (cross-sample contamination)
+ * Lab vectors (barcodes, adapters, etc., see NCBI _UniVec_ and _UniVec\_Core_)
+
+@TODO@ include a tool for doing contamination analysis on reads, and/or rely on contamination
+detection in assemblies.
+
+HPC tools (CheckM, FastQScreen) are too heavyweight.  It should be possible to create a rapid
+(KMA-based) screening application.
 
 
-## Reads to Assembly (= Genome)
+## Reads to Genome Assembly
+
+Not strictly necessary for diagnostics, as reads contain more information than assemblies.
+
+But once assembled (from good quality and deep coverage reads), a Nanopore assembly can be
+analysed just like any short read assembly.
 
 ### Flye
 
+Nanopore assemblers are still in development, but Flye is a de facto standard.  Installation:
+
+    sudo apt install flye
+
+Running Flye is very simple, and according to [its documentation](https://github.com/fenderglass/Flye)
+needs _no prior cleaning or trimming_ of the reads:
+
+    # Using all CPUs on the machine (nproc)
+    flye -t $(nproc) --out-dir $OUT_DIR $INPUT_FQ
+
+When basecalling was done with the Guppy SUP model and/or read quality is Q20+:
+
+    flye -t $(nproc) --out-dir $OUT_DIR --nano-hq $INPUT_FQ
+
 ### Medaka
 
+Medaka is an assembly polisher and variant caller made by ONT.  It is the recommended polisher for
+Flye assemblies.  The [Medaka documentation](https://github.com/nanoporetech/medaka) mentions that
+is has specifically been trained on Flye output (it is an ML-based tool).
 
-## Assembly to Analysis
+Installation ideally from BioConda:
 
-Once you have the assembled genome (assuming your run and reads passed QC), you can use it like any other assembly.
+    conda create -n medaka -c conda-forge -c bioconda medaka
 
-We won't get 
-  analysis directly from Nanopore reads needs special attention (compared to ), once you have an assembled genome, you can in principle apply any analysis takes assemblies as input.
+but this has been problematic recently, and versions have been lagging considerably behind releases.
+
+Building from source _in a Conda environment_ (see the Chapter on "Installation Do's and Donts" below)
+is probably your best option.
+
+Medaka comes in a CPU and GPU version.  The CPU version has acceptable runtime for moderate volumes
+of reads.
+
+Running Medaka on all CPUs:
+
+    conda activate medaka
+    medaka_consensus -i INPUT_FQ -d ASSEMBLY_FA -o OUTDIR -m MEDAKA_MODEL -t $(nproc)
+
+Where `MEDAKA_MODEL` should be chosen as closely as possible to the model used for `guppy_basecaller`.
+`medaka tools list_models` lists the available models.
 
 
-## Reads to Analysis
+### Hybrid Assembly: Polypolish
+
+If you have short reads in addition to Nanopore reads (from which Flye + Medaka produced a nice
+complete genome), then `polypolish` is the perfect way to 'polish' the genome with (high accuracy)
+short reads.
+
+Installation of polypolish: download the pre-compiled binary and insert\_filter script from
+[its GitHub site](https://github.com/rrwick/Polypolish/releases) and drop these in your `~/bin`.
+
+Running polypolish:
+
+    bwa index $DRAFT_FNA && \
+    bwa mem -t $(nproc) -a $DRAFT_FNA $READS1_FQ > $ALN1_SAM && \
+    bwa mem -t $(nproc) -a $DRAFT_FNA $READS2_FQ > $ALN2_SAM && \
+    polypolish_insert_filter.py --in1 $ALN1_SAM --in2 $ALN2_SAM --out1 $FLT1_SAM --out2 $FLT2_SAM && \
+    polypolish $DRAFT_FNA $FLT1_SAM $FLT2_SAM \
+    > $OUTPUT_FNA
 
 
+## Reads to Analysis Results: LPF
 
-## Installation Dos and Donts
+This is the tool we were/are going to install on the FAO/SeqAfrica laptops together,
+but clearly this hinges on the laptop actually being there. :-)
+
+Installation is straightforward, following the instructions linked from
+the [GitHub page](https://github.com/MBHallgren/LPF), found [here](https://mbhallgren.github.io/LPF_mkdocs/).
+
+However, the size of the reference databases is such that a guided walkthrough
+(with a few special steps) would have been ideal.
+
+We will go through at a demo, and plan the best approach to do the installation later.
+
+
+## Installation Do's and Donts
 
  * *Always* prefer `sudo apt install` 
 
