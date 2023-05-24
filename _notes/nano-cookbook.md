@@ -1,6 +1,6 @@
 ---
 title: Nano Cookbook - course materials
-excerpt: "Notebook with instructions for May 2023 workshop 'Strengthening Microbial Risk Assessment for Food Safety and Antimicrobial Resistance Using Portable DNA Sequencing Technology'
+excerpt: "Notebook with instructions for May 2023 workshop 'Strengthening Microbial Risk Assessment for Food Safety and Antimicrobial Resistance Using Portable DNA Sequencing Technology"
 layout: page
 updated: 2023-05-21
 ---
@@ -305,6 +305,7 @@ analysed just like any short read assembly.
 
 Nanopore assemblers are still in development, but Flye is a de facto standard.  Installation:
 
+    # Note: this not on Ubuntu 22.04 yet
     sudo apt install flye
 
 Running Flye is very simple, and according to [its documentation](https://github.com/fenderglass/Flye)
@@ -325,7 +326,7 @@ is has specifically been trained on Flye output (it is an ML-based tool).
 
 Installation ideally from BioConda:
 
-    conda create -n medaka -c conda-forge -c bioconda medaka
+    mamba create -n medaka -c conda-forge -c bioconda medaka
 
 but this has been problematic recently, with versions lagging behind Medaka releases.
 
