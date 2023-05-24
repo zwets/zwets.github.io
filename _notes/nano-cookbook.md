@@ -305,14 +305,18 @@ analysed just like any short read assembly.
 
 Nanopore assemblers are still in development, but Flye is a de facto standard.  Installation:
 
-    # Note: this not on Ubuntu 22.04 yet
+    # Note: not on 22.04 yet, works from 23.04
     sudo apt install flye
 
 Running Flye is very simple, and according to [its documentation](https://github.com/fenderglass/Flye)
 needs _no prior cleaning or trimming_ of the reads:
 
     # Using all CPUs on the machine (nproc)
-    flye -t $(nproc) --out-dir $OUT_DIR $INPUT_FQ
+    flye -t $(nproc) --out-dir $OUT_DIR --nano-raw $INPUT_FQ
+
+If the reads *were* corrected, use `--nano-corr` instead of `--nano-raw`:
+
+    flye -t $(nproc) --out-dir $OUT_DIR --nano-corr $INPUT_FQ
 
 When basecalling was done with the Guppy SUP model and/or read quality is Q20+:
 
