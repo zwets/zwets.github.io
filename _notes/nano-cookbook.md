@@ -332,19 +332,26 @@ Installation ideally from BioConda:
 
     mamba create -n medaka -c conda-forge -c bioconda medaka
 
-but this has been problematic recently, with versions lagging behind Medaka releases.
+If this does not work, or the version you obtain is out of date, building from source _in a Conda
+environment_ (see the Chapter on "Installation Do's and Donts" below) is your best option.
 
-Building from source _in a Conda environment_ (see the Chapter on "Installation Do's and Donts" below)
-is probably your best option.
-
-Medaka comes in a CPU and GPU version.  The CPU version has acceptable runtime for moderate volumes
-of reads.  Running Medaka on all CPUs:
+To run medaka (using all CPU's):
 
     conda activate medaka
     medaka_consensus -i INPUT_FQ -d ASSEMBLY_FA -o OUTDIR -m MEDAKA_MODEL -t $(nproc)
 
 Where `MEDAKA_MODEL` should be chosen as closely as possible to the model used for `guppy_basecaller`.
 `medaka tools list_models` lists the available models.
+
+If Medaka runs out of memory, add option `-b 80` to the command-line.  If it still runs out of
+memory, reduce the `80` further until it doesn't.
+
+The Medaka docs mention that"for users with RTX series GPUs it may be required to additionally set:
+
+    # Execute this AFTER conda activate medaka
+    export TF_FORCE_GPU_ALLOW_GROWTH=true
+
+Medaka also has a CPU version, which should work in all cases but is much slower.
 
 ### Hybrid Assembly: Polypolish
 
